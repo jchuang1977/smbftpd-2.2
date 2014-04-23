@@ -1,0 +1,190 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Bug Tracker</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+<p align="center"><tt class="chtitle1">SmbFTPD 使用手册</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="26%" align="left" valign="bottom">
+    <a href="03_smbftpd.conf.htm">上一页<br>
+    smbfptd.conf</a></td>
+    <td width="46%" valign="bottom">&nbsp;</td>
+    <td width="20%" nowrap align="right" valign="bottom">
+    <a href="05_files.htm">下一页<br>
+    相关档案</a></td>
+  </tr>
+</table>
+
+<hr>
+
+<p><tt class="chtitle1">第四章 虚拟使用者</tt></p>
+
+<p><tt class="chtitle4">内容列表</tt></p>
+
+<blockquote>
+
+<p>4.1 <a href="#4.1">使用 MySQL</a></p>
+
+<p>4.2 <a href="#4.2">使用 PostgreSQL</a></p>
+
+<p>4.3 <a href="#4.3">使用纯文字文件</a></p>
+
+</blockquote>
+
+<p><a name="4.1"><tt class="chtitle2">4.1 使用 MySQL</tt></a></p>
+
+<p>如果您要使用 MySQL 进行虚拟使用者的身份认证，请先在 smbftpd.conf 中加入下列设定：</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	mysql
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_mysql.conf</pre>
+
+<p>接着请修改 <tt class="filename">/usr/local/etc/smbftpd/smbftpd_mysql.conf</tt>，设定
+MySQL 的 IP、数据库名称、使用者、及密码。</p>
+
+
+<p>在 MySQL 数据库中，我们建立一个名为 user_table 的表格：</p>
+
+
+<pre class="screen">CREATE TABLE user_table(
+	name varchar(64),
+	password varchar(64),
+	group_name varchar(64),
+	home varchar(256)
+);</pre>
+<p>然后在表格中新增使用者，您就可以使用 MySQL 的虚拟使用者登入了。</p>
+
+
+<p>请注意，在使用者的密码字段中，我们可以使用下列四种编码：&quot;plaintext&quot;、&quot;crypt&quot;、&quot;md5&quot;、&quot;password&quot;。plaintext
+指的是明码，就是直接将密码以文字方式存放，不进行任何编码。password 是 MySQL password() 所加密出来的密码。</p>
+
+
+<p><a name="4.2"><tt class="chtitle2">4.2 使用 PostgreSQL</tt></a></p>
+
+<p>如果您要使用 PostgreSQL 进行虚拟使用者的身份认证，请先在 smbftpd.conf 中加入下列设定：</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	pgsql
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_pgsql.conf</pre>
+
+<p>接着请修改 <tt class="filename">/usr/local/etc/smbftpd/smbftpd_pgsql.conf</tt>，设定
+PostgreSQL 的 IP、数据库名称、使用者、及密码。</p>
+
+
+<p>在 PostgreSQL 数据库中，我们建立一个名为 user_table 的表格：</p>
+
+<pre class="screen">CREATE TABLE user_table(
+	name varchar(64),
+	password varchar(64),
+	group_name varchar(64),
+	home varchar(256)
+);</pre>
+
+
+<p>然后在表格中新增使用者，您就可以使用 PostgreSQL 的虚拟使用者登入了。</p>
+
+
+<p>请注意，在使用者的密码字段中，我们可以使用下列三种编码：&quot;plaintext&quot;、&quot;crypt&quot;、&quot;md5&quot;。plaintext
+指的是明码，就是直接将密码以文字方式存放，不进行任何编码。</p>
+
+
+<p><a name="4.3"><tt class="chtitle2">4.3 使用纯文字文件</tt></a></p>
+
+<p>如果您要使用纯文本文件进行虚拟使用者的身份认证，请先在 smbftpd.conf 中加入下列设定：</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	text
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_user.conf</pre>
+
+<p>接着请使用 smbftpd-user 这个指令来新增使用者：</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -h</tt>
+
+Usage: ./smbftpd-user -[aedt] user [-t type]
+
+options:
+	-s file 	Set the path of smbftpd.conf
+	-a user 	Add a smbftpd virtual user into text file
+	-e user 	Edit a smbftpd virtual user into text file
+	-d user 	Delete a smbftpd virtual user into text file
+	-g user 	Get the status of user.
+			The user can be real user or mysql/pgsql/text virtual
+			user. We will print the available share and permission
+			of the user.
+	-h		Print this help message
+</pre>
+
+<p>您可使使用 -a 指令来新增使用者，例如，新使用者 alex：</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -a alex</tt>
+Group name: users
+Home: /noexist
+Enter password:
+Enter password again:
+User [alex] is add.</pre>
+
+
+<p>我们就可以在 <tt class="filename">/usr/local/etc/smbftpd/smbftpd_user.conf</tt>
+文件中看到该使用者的数据。如果您要删除使用者，可以直接修改该档案，或是使用 smbftpd-user -d user 来删除使用者。</p>
+
+
+<p>另外，您也可以使用 smbftpd-user -g user 来查看使用者目前的权限设定 (不限定为虚拟使用者，也可以是真实使用者)。例如：</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -g alex</tt>
+
+Authentication Method: text
+
+Login : alex
+Real user : ftp
+Home : /noexist
+Anonymous : No
+Download bandwidth : 100 KB/s
+Upload bandwidth : 2000 KB/s
+Mode : smb
+Available shares :
+	[public]
+		Path : /volume1/home/alex
+		Writeable : Yes
+		Browseable : Yes
+		List files : No
+		Download : Yes
+		Modify data : No
+	[music]
+		Path : /volume1/synosrc
+		Writeable : No
+		Browseable : Yes
+		List files : Yes
+		Download : Yes
+		Modify data : Yes
+</pre>
+
+
+<hr>
+<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="25%" valign="top">
+    <a href="03_smbftpd.conf.htm">上一页<br>
+    smbfptd.conf</a></td>
+    <td width="55%" valign="top">
+    <p align="center"><a href="index.htm">索引</a><br>
+    您可以在
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a> 取得本文件</td>
+    <td width="20%" nowrap align="right" valign="top">
+    <a href="05_files.htm">下一页<br>
+    相关档案</a></td>
+  </tr>
+</table>
+
+</body>
+
+</html>

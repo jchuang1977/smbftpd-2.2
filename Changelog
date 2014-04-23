@@ -1,0 +1,101 @@
+* Fri. Jan. 8, 2009 Alex Wang <alex@alexwang.com>
+ [2.2]
+Bug fixes:
+- Fixed FreeBSD security advisory FreeBSD-SA-08:12.ftpd
+- Fixed a typo on smbftpd-user help
+- Fixed the bug of wrong file time when file time is 2008/12/30
+
+Features:
+
+==============================================================================
+* Fri. Aug. 22, 2008 Alex Wang <alex@alexwang.com>
+ [2.1]
+Bug fixes:
+- Set default transfer mode to binary not ASCII.
+- Change the rule of unique file name from "local.jpg.XX" to "local.XX.jpg"
+- Support Russian reversed 'R' (0xff) charactor in file name.
+- The Windows IE still send "opt utf on" when UTF-8 is not enabled. We should
+  block the command so the IE will use correct encoding.
+
+Features:
+
+==============================================================================
+* Sat. May. 24, 2008 Alex Wang <alex@alexwang.com>
+ [2.0]
+Bug fixes:
+- Fixed STAT file command error when using SSL/TLS FTP
+- When using Unix authenticaion on Linux, we should check account expiration.
+- Fixed setproctitle string ending problem on non-BSD platform.
+
+Features:
+
+==============================================================================
+
+* Thu. May. 1, 2008 Alex Wang <alex@alexwang.com>
+ [2.0rc3]
+Bug fixes:
+
+Features:
+- Add a feature to allow user to set the external IP that will be used in
+  passive mode.
+
+==============================================================================
+* Sun. Apr. 6, 2008 Alex Wang <alex@alexwang.com>
+ [2.0rc2]
+Bug fixes:
+- Fixed compile error on Linux when LINE_MAX is not defined.
+- Fixed installation problem when /usr/local/bin does not exist.
+==============================================================================
+
+* Sun Mar. 30, 2008 Alex Wang <alex@alexwang.com>
+ [2.0rc1]
+Features:
+- Support UTF-8 conversion between filesystem and client connection.
+- Support virtual user authentication by MySQL, PostgreSQL, and text file.
+- Anonymous read only option.
+- Allow user to hide program version/information.
+- Support passive mode port range.
+- Max connection per ip.
+- Add an option to hide dot files.
+- Reconstruct, refactory, rewrite the whole system. So it is easier to
+  maintain and readable.
+
+==============================================================================
+* Sun Sep 30 2007 Alex Wang <alex@alexwang.com>
+ [0.97]
+Bug fixes:
+- We should support PROT in SSL mode, too. Otherwise, the
+  Filezilla, TurboFTP would failed to connection in SSLv3 mode.
+- Fix a vulnerability caused by misuse of fprintf().
+  (Thanks to Jerry Illikainen)
+
+==============================================================================
+* Sun Aug 7 2005 Alex Wang <alex@alexwang.com>
+ [0.96]
+Features:
+- Show more warning when initial SSL failed in daemon mode.
+
+Bug fixes:
+- Fixed a bug when "ls *.pdf", the result is incorrect.
+- Fixed a bug that the file size in transfer log is not correct
+  after user tried to download non-exist files.
+- Fixed a compile error when SSL is not supported.
+- Block signal in TransferThrottle to avoid syslog warning.
+
+==============================================================================
+* Sun May 29 2005 Alex Wang <alex@alexwang.com>
+  [0.95]
+Features:
+- SSL support: Port SSL support from BSDftpd-ssl 1.1.0.
+- Add transfer log to log files user download/upload.
+- Add FreeBSD rc.d file. We can use /usr/local/etc/rc.d/smbftpd to
+  start/stop smbftpd now.
+- We accept any user name under AnonymousOnly mode.
+- Allow users to RestrictedPorts option to disable paranoid check
+  on the IPPORT_RESERVED ports.
+
+Bug fixes:
+- Fixed a bug on MD5 and MDTM command. Users might not able to get
+  the correct path under SMB mode.
+- Fixed potential bug in free gSysConf.
+

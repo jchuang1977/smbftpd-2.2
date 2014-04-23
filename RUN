@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+#AR="/opt/cnstools/arm-linux-le-uclibc-gcc-4.3.3-2010.05/usr/bin/arm-unknown-linux-uclibcgnueabi-ar"
+#CC="/opt/cnstools/arm-linux-le-uclibc-gcc-4.3.3-2010.05/usr/bin/arm-unknown-linux-uclibcgnueabi-gcc"
+#RANLIB="/opt/cnstools/arm-linux-le-uclibc-gcc-4.3.3-2010.05/usr/bin/arm-unknown-linux-uclibcgnueabi-ranlib"
+#CXX="/opt/cnstools/arm-linux-le-uclibc-gcc-4.3.3-2010.05/usr/bin/arm-unknown-linux-uclibcgnueabi-g++"
+#LD="/opt/cnstools/arm-linux-le-uclibc-gcc-4.3.3-2010.05/usr/bin/arm-unknown-linux-uclibcgnueabi-ld"
+
+#if [ -e Makefile ] ; then
+#	exit 0
+#fi
+
+./configure --host=arm-unknown-linux \
+			--target=arm-unknown-linux \
+			--build=i686-pc-linux \
+			--prefix=/home/andy/wnc/fakeroot

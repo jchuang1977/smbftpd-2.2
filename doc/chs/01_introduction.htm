@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD 使用手册</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="index.htm">上一页<br>
+    索引</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="02_installation.htm">下一页<br>
+    安装 </a></td>
+  </tr>
+</table>
+
+    <hr>
+
+    <p class="chtitle1">第一章 简介</p>
+
+    <p class="chtitle4">内容列表</p>
+    <blockquote>
+
+    <p>1.1 <a href="#whatis">什么是 SmbFTPD</a></p>
+
+    <p>1.2 <a href="#feature">功能及特色</a></p>
+    </blockquote>
+
+    <p><a name="whatis"><tt class="chtitle2">
+    1.1 什么是 SmbFTPD</tt></a></p>
+    <p>SmbFTPD 是一套从 FreeBSD 的 FTP daemon 修改而成的软件。它除了拥有原本 FreeBSD ftpd
+    所有功能外，还有更多使用者权限控制、整合设定文件路径及更多功能。另外，它也支持 SSL/TLS 加密的功能，该功能是由
+    <a href="http://bsdftpd-ssl.sc.ru/">BSDftpd-ssl </a>移植而来。</p>
+    <p>SmbFTPD 和一般 FTP daemon 最大的不同在于它使用类似 Samba 的数据夹权限设定，您可以设定让 FTP 使用者登入后所看到的目录跟使用
+    Windows 登入时一模一样。也就是说 FTP 登入的使用者对于数据夹的存取权限和使用 Windows 登入 Samba 一模一样。</p>
+    <p>而您也可以将 SmbFTPD 做为一般 FTP daemon 使用，或同时支持 Samba 模式。FreeBSD 的 FTP daemon
+    本来效能就很好，修改过的 SmbFTPD 效能也十分优越，而且程序文件本身体积很小。</p>
+    <p><a name="feature"><tt class="chtitle2">1.2 功能及特色</tt></a></p>
+    <p>SmbFTPD 支持大多数的 Unix 系统，测试过  FreeBSD 5.x、FreeBSD 6.x、FreeBSD 7.x、Linux 2.4、Linux
+    2.6、NetBSD 等。而且它非常易于 cross compile，您也可以安装在非 x86 的平台上，目前测试过的平台有
+    ARM、PowerPC、x86。</p>
+    <ul>
+      <li>效能优越</li>
+      <li>档案很小 (约 90KB)，占用内存空间小</li>
+      <li>支援 SSL/TLS 加密</li>
+      <li>支持虚拟的使用者，可以使用 MySQL、PostgreSQL、或文字文件存放使用者。</li>
+      <li>支持 UTF8 及非 UTF8 的 FTP client 和档案系统间的文件名转换</li>
+      <li>可以更改 port</li>
+      <li>限制最多联机数量及同一个 IP 最多联机数目</li>
+      <li>针对使用者、群组做流量控制</li>
+      <li>针对使用者、群组设定 chroot 的路径</li>
+      <li>类似 Samba 的数据夹权限，可以针对目录设定使用者的读写权限</li>
+      <li>限制 FTP 指令的使用，如上传、下载等</li>
+      <li>匿名使用者登入</li>
+      <li>诸多匿名使用者的权限控制</li>
+      <li>同时支持 Samba 权限控制模式及一般 FTP 模式</li>
+      <li>可以拒绝某些使用者 &quot;ls&quot; 出某一个 share 下的档案</li>
+      <li>可以拒绝某些使用者下载档案或是修改已存在的档案</li>
+      <li>可以让某个数据夹处于只能上传的模式</li>
+    </ul>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="index.htm">上一页<br>
+    索引</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">索引</a><br>
+    您可以在
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a> 取得本文件</td>
+    <td width="10%" align="right" valign="top"><a href="02_installation.htm">下一页<br>
+    安装 </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

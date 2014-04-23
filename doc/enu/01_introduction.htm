@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD Handbook</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="index.htm">Priv<br>
+    Index</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="02_installation.htm">
+    Next<br>
+    Installation </a></td>
+  </tr>
+</table>
+
+    <hr>
+
+    <p class="chtitle1">Chapter 1 Introduction</p>
+
+    <p class="chtitle4">Table of Contents</p>
+    <blockquote>
+
+    <p>1.1 <a href="#whatis">What is SmbFTPD</a></p>
+
+    <p>1.2 <a href="#feature">Features</a></p>
+    </blockquote>
+
+    <p><a name="whatis"><tt class="chtitle2">
+    1.1 What is SmbFTPD</tt></a></p>
+    <p>SmbFTPD is a FTP daemon modified from the FTP daemon of FreeBSD 5.4. 
+    Besides keep original FreeBSD ftpd features, it enhances the user 
+    permission control, integrate configuration files, and more useful features. 
+    SmbFTPD also support SSL/TLS encryption. The SSL/TLS functions are ported 
+    from <a href="http://bsdftpd-ssl.sc.ru/">BSDftpd-ssl</a> project.</p>
+    <p>The biggest difference between SmbFTPD and normal FTP daemon is it 
+    use Samba-like share management mechanism. When user login SmbFTPD, his/her 
+    permission on share folders can be exactly the same with Samba. You can make FTP 
+    users have the same permission with Samba Windows users.</p>
+    <p>You may also use SmbFTPD as a normal FTP daemon or use Samba mode at the 
+    same time. The original FreeBSD&#39;s FTP daemon is a performance server. The 
+    SmbFTPD is high performance, too. Its small footprint makes it suitable for 
+    embedded FTP server.</p>
+    <p><a name="feature"><tt class="chtitle2">1.2 Features</tt></a></p>
+    <p>SmbFTPD support most Unix-like operating system. It has been tested on  FreeBSD 5.x, 
+    FreeBSD 6.x, Linux 2.4, Linux 2.5, NetBSD, etc. It is very easy to cross 
+    compile and install on non-x86 platforms. We have run it on ARM Power Pc, X86, and MIPS.</p>
+    <ul>
+      <li>High performance.</li>
+      <li>Small footprint. Only 90KB.</li>
+      <li>SSL/TLS encryption support.</li>
+      <li>Virtual user support. You can put users in MySQL, PostgreSQL, or text 
+      file.</li>
+      <li>Support UTF-8 conversion between client and filesystem.</li>
+      <li>Can change default port number.</li>
+      <li>Limit max connection and max connection per IP.</li>
+      <li>Flow control by user and group.</li>
+      <li>Configurable chroot path for different user and group.</li>
+      <li>Samba-like share management mechanism. You can set read/write permission 
+      on user/group for different directories.</li>
+      <li>Can disable some FTP command to avoid upload, download, and so on.</li>
+      <li>Anonymous user login.</li>
+      <li>Many anonymous user access control.</li>
+      <li>Support Samba mode and normal mode at the same time.</li>
+      <li>Can disable LIST command for some users/groups in some shares.</li>
+      <li>Can disable users/groups to download files in some shares.</li>
+      <li>Can make user to upload file only and can&#39;t modify exist files.</li>
+      <li>Put a directory in upload only mode.</li>
+    </ul>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="index.htm">Priv<br>
+    Index</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">Index</a><br>
+    This document can be downloaded from 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a>.</td>
+    <td width="10%" align="right" valign="top"><a href="02_installation.htm">
+    Next<br>
+    Installation </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

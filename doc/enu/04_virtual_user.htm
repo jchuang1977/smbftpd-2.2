@@ -1,0 +1,197 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+<p align="center"><tt class="chtitle1">SmbFTPD Handbook</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="26%" align="left" valign="bottom">
+    <a href="03_smbftpd.conf.htm">Priv<br>
+    smbfptd.conf</a></td>
+    <td width="46%" valign="bottom">&nbsp;</td>
+    <td width="20%" nowrap align="right" valign="bottom">
+    <a href="05_files.htm">Next<br>
+    Files</a></td>
+  </tr>
+</table>
+
+<hr>
+
+<p><tt class="chtitle1">Chapter 4 Virtual User</tt></p>
+
+<p><tt class="chtitle4">Table of Contents</tt></p>
+
+<blockquote>
+
+<p>4.1 <a href="#4.1">MySQL Virtual User</a></p>
+
+<p>4.2 <a href="#4.2">PostgreSQL Virtual User</a></p>
+
+<p>4.3 <a href="#4.3">Text File Virtual User</a></p>
+
+</blockquote>
+
+<p><a name="4.1"><tt class="chtitle2">4.1 MySQL Virtual User</tt></a></p>
+
+<p>If you would like to use MySQL to do virtual user authentication, please add 
+these in smbftpd.conf:</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	mysql
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_mysql.conf</pre>
+    
+<p>Then edit the&nbsp; <tt class="filename">/usr/local/etc/smbftpd/smbftpd_mysql.conf</tt> 
+to set the MySQL server IP, database, username, and password.</p>
+
+
+<p>Then create a table name user_table in the MySQL database:</p>
+
+
+<pre class="screen">CREATE TABLE user_table(
+	name varchar(64),
+	password varchar(64),
+	group_name varchar(64),
+	home varchar(256)
+);</pre>
+<p>Then you can insert user into the table to start using MySQL virtual user.</p>
+
+
+<p>Please note the password can store the following password encoding: &quot;plaintext&quot;, &quot;crypt&quot;, &quot;md5&quot;, 
+and &quot;password&quot;. the plaintext means non-encrypted password. Just store the 
+password as it is with performing any encryption. The &quot;password&quot; means encrypt 
+the password by the MySQL&#39;s password() function.</p>
+
+
+<p><a name="4.2"><tt class="chtitle2">4.2 PostgreSQL Virtual User</tt></a></p>
+
+<p>If you would like to use PostgreSQL to do virtual user authentication, please 
+add these in smbftpd.conf:</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	pgsql
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_pgsql.conf</pre>
+    
+<p>Then edit the&nbsp; <tt class="filename">/usr/local/etc/smbftpd/smbftpd_pgsql.conf</tt> 
+to set the PostgreSQL server IP, database, username, and password.</p>
+
+
+<p>Then create a table name user_table in the PostgreSQL database:</p>
+
+
+<pre class="screen">CREATE TABLE user_table(
+	name varchar(64),
+	password varchar(64),
+	group_name varchar(64),
+	home varchar(256)
+);</pre>
+<p>Then you can insert user into the table to start using PostgreSQL virtual 
+user.</p>
+
+
+<p>Please note the password can store the following password encoding: &quot;plaintext&quot;, &quot;crypt&quot;, 
+and &quot;md5&quot;. The plaintext means non-encrypted password. Just store the 
+password as it is with performing any encryption.</p>
+
+
+<p><a name="4.3"><tt class="chtitle2">4.3 Text File Virtual User</tt></a></p>
+
+<p>If you would like to use text file to store the virtual user data, please add 
+the following lines in the smbftpd.conf:</p>
+
+<pre class="screen">VirtualUserMapping	ftp
+VirtualUserAuthMethod	text
+VirtualUserAuthConfig	/usr/local/etc/smbftpd/smbftpd_user.conf</pre>
+    
+<p>Then user the command &quot;smbftpd-user&quot; to add user:</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -h</tt>
+
+Usage: ./smbftpd-user -[aedt] user [-t type]
+
+options:
+	-s file 	Set the path of smbftpd.conf
+	-a user 	Add a smbftpd virtual user into text file
+	-e user 	Edit a smbftpd virtual user into text file
+	-d user 	Delete a smbftpd virtual user into text file
+	-g user 	Get the status of user.
+			The user can be real user or mysql/pgsql/text virtual
+			user. We will print the available share and permission
+			of the user.
+	-h		Print this help message
+</pre>
+
+<p>You can use -a option to add user. For example:</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -a alex</tt>
+Group name: users
+Home: /noexist
+Enter password: 
+Enter password again: 
+User [alex] is add.</pre>
+
+
+<p>After adding the user, you can see the user appears in <tt class="filename">/usr/local/etc/smbftpd/smbftpd_user.conf</tt>. 
+To delete user, you can just edit the file and remove the line or use smbftpd-user 
+-d user to delete the user.</p>
+
+
+<p>The smbftpd-user allow you to see user&#39;s permission of other authentication 
+method. For example, you can see the permission of real user, too:</p>
+
+
+<pre class="screen"># <tt class="userinput">./smbftpd-user -g alex</tt>
+
+Authentication Method: text
+
+Login : alex
+Real user : ftp
+Home : /noexist
+Anonymous : No
+Download bandwidth : 100 KB/s
+Upload bandwidth : 2000 KB/s
+Mode : smb
+Available shares :
+	[public]
+		Path : /volume1/home/alex
+		Writeable : Yes
+		Browseable : Yes
+		List files : No
+		Download : Yes
+		Modify data : No
+	[music]
+		Path : /volume1/synosrc
+		Writeable : No
+		Browseable : Yes
+		List files : Yes
+		Download : Yes
+		Modify data : Yes</pre>
+
+
+<hr>
+<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="25%" valign="top">
+    <a href="03_smbftpd.conf.htm">Priv<br>
+    smbfptd.conf</a></td>
+    <td width="55%" valign="top">
+    <p align="center"><a href="index.htm">Index</a><br>
+    This document can be downloaded from 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a>.</td>
+    <td width="20%" nowrap align="right" valign="top">
+    <a href="05_files.htm">Next<br>
+    Files</a></td>
+  </tr>
+</table>
+
+</body>
+
+</html>

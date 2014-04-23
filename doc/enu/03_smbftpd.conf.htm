@@ -1,0 +1,1028 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD Handbook</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="02_installation.htm">
+    Priv<br>
+    Installation</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="04_virtual_user.htm">Next<br>
+    Virtual User </a></td>
+  </tr>
+</table>
+
+<hr>
+
+    <p class="chtitle1">Chapter 3 smbftpd.conf</p>
+
+    <p class="chtitle4">Table of Contents</p>
+    <ul>
+      <li><a href="#system">System Section</a></li>
+      <li><a href="#user_login">Login Control</a></li>
+      <li><a href="#share_access">FTP Folder Control</a></li>
+      <li><a href="#anonymous">Anonymous Control</a></li>
+      <li><a href="#transfer">File Transfer Control</a></li>
+      <li><a href="#ssl">SSL/TLS Control</a></li>
+</ul>
+    <p class="chtitle2"><a name="system">System Section</a></p>
+    <p><tt class="chtitle4">Option: ServerName</tt></p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <tt class="screen">
+<blockquote>
+  <p>ServerName &quot;Server Name&quot;</p>
+</blockquote>
+</tt>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Define the name of server. This will show when user login:</p>
+    <p class="screen">Connected to localhost.com.<br>
+    220 <font color="#FF0000"><b>Server Name</b></font> FTP server (SmbFTPD Ver 
+    2.0) ready.<br>
+    Name (localhost:alex):</p>
+    <p>If ServerName is not set, we will use hostname which is get by 
+    gethostname(3).</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <p>None (Use hostname)</p>
+    <hr>
+    <p><tt class="chtitle4">Option: ShowProgramVersion</tt></p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <tt class="screen">
+<blockquote>
+  <p>ShowProgramVersion&nbsp;&nbsp;&nbsp; Yes|No</p>
+</blockquote>
+</tt>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Whether show the SmbFTPD program name and version. You can disable this 
+    to avoid it is showed when login. </p>
+    <p class="screen">Connected to localhost.com.<br>
+    220 Server Name FTP server <font color="#FF0000"><b>(SmbFTPD Ver 2.0)</b></font> ready.<br>
+    Name (localhost:alex):</p>
+    <p>If ServerName is not set, we will use hostname which is get by 
+    gethostname(3).</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <p>ShowProgramVersion&nbsp;&nbsp;&nbsp; Yes</p>
+    <hr>
+    <p class="chtitle4">Option: ListenOnAddress</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <tt class="screen">
+    <blockquote>
+    <p>ListenOnAddress 192.168.0.1</p>
+    </blockquote>
+    </tt>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>When -D is specified (standalone), accept connections only on the 
+    specified address only. For example, if you have two network address, one is 
+    172.16.1.1, the other is 61.62.63.64. You can set the ListenOnAddress 
+    172.16.1.1 to accept traffic from intranet only.</p>
+    <p>If you would like to accept traffic from all interface, just remove this 
+    option.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None (Listen on all interfaces)</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: Port</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    Port prot_num|service</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Deacription:</tt></p>
+    <blockquote>
+    <p>Set the FTP port for listening connections. When -D (daemon mode) is 
+    specified, accept connections at port, specified as a numeric value or 
+    service name, instead of at the default ``ftp&#39;&#39; port.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Port ftp</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: Umask</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    Umask umask</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The default file creation mode mask is set to umask, which is expected to 
+    be an octal numeric value. </p>
+    <p>For example, if you would like file&#39;s mode to be 644 on creation, just 
+    set the umask to 022. Refer to umask(2) for details.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Umask 022</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: PidFile</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    PidFile /some/where/file</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The pid file for ftp daemon. When using daemon mode, the ftp daemon will 
+    write it&#39;s pid to pid file if set.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None (don&#39;t write pid)</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: DebugMode</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DebugMode Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>og more information for debug.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>DebugMode No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: LogCommand</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    LogCommand Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Each successful and failed ftp(1) session is logged using syslog with a 
+    facility of LOG_FTP. If this option is set to &quot;Yes&quot;, the retrieve (get), 
+    store (put), append, delete, make directory, remove directory and rename 
+    operations and their filename arguments are also logged. By default, 
+    syslogd(8) logs these to /var/log/xferlog on FreeBSD.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>LogCommand No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: DoWtmpLog</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DoWtmpLog Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Log FTP session to /var/log/wtmp</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>DoWtmpLog No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: DisableEPSV</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DisableEPSV Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Disable the EPSV command. This is useful for servers behind older 
+    firewalls.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>DisableEPSV No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: RestrictedPorts</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    RestrictedPorts Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>With this option set to &quot;No&quot;, ftpd will revert to historical behavior 
+    with regard to security checks on user operations and restrictions on PORT 
+    requests. Currently, ftpd will only honor PORT commands directed to 
+    unprivileged ports (which is &gt; 1024 in most OS) on the remote user&#39;s host 
+    (which violates the FTP protocol specification but closes some security 
+    holes).</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>RestrictedPorts Yes</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: PassiveModePortRange</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    PassiveModePortRange&nbsp;&nbsp;&nbsp; low-high</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Set the port range used in passive mode data connection. If your FTP 
+    server is behind NAT, you might want to forward passive mode port range on 
+    router.</p>
+    <p>For example, if you would like to use port range 40000 to 50000:</p>
+    <p>
+    <tt class="screen">
+    PassiveModePortRange&nbsp;&nbsp;&nbsp; 40000-50000</tt></p>
+    <p>The range should be &gt;=1024 and &lt;=65535 (1023 &lt; range &lt; 65536).</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Not set</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="user_login">Login Control</a></p>
+    <p class="chtitle4">Option: MaxConnection</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxConnection number</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>This option allows the number of simultaneous connections to a service to 
+    be limited. If max connections is greater than 0 then connections will be 
+    refused if this number of connections to the service are already open. A 
+    value of zero mean an unlimited number of connections may be made.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>MaxConnection 0</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: MaxConnectionPerIP</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxConnectionPerIP number</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>This option set the max connection per ip address. To use this option, 
+    you must set the MaxConnection, too.</p>
+    <p>Set the value less then 2 is not recommended because many FTP clients 
+    open more then 1 connection in single session.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>MaxConnectionPerIP 0 (unlimited)</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: VirtualUserMapping</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserMapping&nbsp;&nbsp;&nbsp; username</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>If you do not want to use real system user in the FTP, you have to ask 
+    SmbFTPD to read user/password from somewhere else (set VirtualUserAuthMethod). 
+    After pass authentication, map the user to a real user in the system. The 
+    real user will be the owner when file is uploaded. The option 
+    VirtualUserMapping is used to specify the real user.</p>
+    <p>For example, you can MySQL for user/password authentication. After user 
+    login, we can map the user to &quot;ftp&quot; user. So the file uploaded by the user 
+    will be owned by &quot;ftp&quot;.</p>
+    <p>Please note that you have to set VirtualUserAuthMethod and 
+    VirtualUserAuthConfig if you enable VirtualUserMapping.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Not set</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: VirtualUserAuthMethod</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthMethod&nbsp;&nbsp;&nbsp; mysql|pgsql|text</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>You can use MySQL, PostgreSQL, or text file to store virtual user&#39;s data 
+    (home, group, password).</p>
+    <p>You would have to set the VirtualUserAuthConfig to specify the path of 
+    auth method config.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Not set</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: VirtualUserAuthConfig</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /path/to/the/VirtualUserAuthMethod.conf</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The config file for the VirtualUserAuthMethod. For example, if you use 
+    MySQL:</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_mysql.conf</tt></p>
+    <p>If you use PostgreSQL:</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_pgsql.conf</tt></p>
+    <p>If you use text file:</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_user.conf</tt></p>
+    <p>If you use text file to store virtual users, you can use the command &quot;smbftpd-user&quot; 
+    to create/edit/delete users.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Not set</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: RequireValidShell</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    RequireValidShell Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>When RequireValidShare=Yes, The user must have a standard shell returned 
+    by getusershell(3). In most system, the valid shells will appear in 
+    /etc/shells.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>RequireValidShell No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: EmptyPasswdLogin</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    EmptyPasswdLogin Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Does the server allow users without password login.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>EmptyPasswdLogin No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: NoLoginList</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NoLoginList MinUID<br>
+    NoLoginList /path/to/noo_login_ftp_users<br>
+    NoLoginList user1,user2,@group1,@group2</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>List of unwelcome/restricted users. Users or groups in the list can not 
+    login to the system.</p>
+    <p>The arguments for NoLoginList can be one of the following format:</p>
+    <ul>
+      <li>A user/@group string list. When using group, please add an prefix &#39;@&#39;.</li>
+      <li>A absolute path to a file that contains no login user/@group.</li>
+      <li>Minimum UID allowed. Users whose uid &lt; MinUID is not allowed.</li>
+    </ul>
+    <p>If using a string list, separate multi users/groups by &quot;,&quot;. For example: 
+    user1, user2, @group1, @group2, user3</p>
+    <p>If using file, each user/group is a new line. For example, you can create 
+    a file named /etc/ftpusers which has the following content:</p>
+    <p>
+    <tt class="screen">
+    user1<br>
+    user2<br>
+    @group1<br>
+    @group2</tt>&nbsp;</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NoLoginList 500</tt></p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: TimeOut</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    TimeOut seconds</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The inactivity timeout period is set to timeout seconds. The default is 
+    15 minutes.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>TimeOut 900</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: MaxTimeOut</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxTimeOut seconds</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>A client may also request a different timeout period; the maximum period 
+    allowed may be set to MaxTimeOut. The default limit is 2 hours.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>MaxTimeOut 7200</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="share_access">FTP Folder Control</a></p>
+    <p class="chtitle4">Option: DefaultMode</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DefaultMode SMB|Normal</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>here are two modes. The SMB mode or Normal mode. The smbftpd will use the 
+    share access rights in smb.conf under SMB mode. On the contrary, it will be 
+    normal FTP daemon under the Normal mode.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>DefaultMode Normal</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: ExceptionList</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ExceptionList user1,user2,@group1,@group2</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>You can use the ExceptionList to set users/groups that do not use the 
+    default ftp mode that is set by DefaultMode. For example, if you would like 
+    to use SMB mode for all users execpt wheel group, you can set the 
+    DefaultMode to the SMB and add @wheel to the ExceptionList.</p>
+    <p>The arguments for ExceptionList can be user or group. When using group, 
+    please add an prefix &#39;@&#39;. When multi users/groups, seperate by &quot;,&quot;. For 
+    example:</p>
+    <p>ExceptionList user1,user2,@group1,@group2</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: ShareConfPath</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShareConfPath /some/where/smb.conf</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Set the path of share configuration file &quot;smbftp_share.conf&quot;. If DefaultMode is SMB or 
+    DefaultMode is Normal with ExceptionList, you must set the path of samba&#39;s 
+    config file.</p>
+    <p>I will check the following keywords in share folder setting:</p>
+    <ul>
+      <li>path: The path of share.</li>
+      <li>rw: users/groups that have write privilege.</li>
+      <li>ro: users/groups that have read only privilege.</li>
+      <li>browseable: does the share is visible when ls in root directory. If it 
+      is set to &quot;no&quot;, users will not be able to see the share. But they can 
+      still &quot;cd&quot; into the it.</li>
+        <li>disable_download: Set the users/groups that can perform download 
+        operation. If user has read only privilege on the share, you can also 
+        add the user in &quot;disable_download&quot; list to disable the download 
+        privilege for the user.</li>
+        <li>disable_ls: Set users/groups that can see directory contents when 
+        perform LIST command.</li>
+        <li>disable_modify: Users/groups in the list will not able to modify 
+        files/directories in the share. If users have read/write privilege and 
+        is in the &quot;disable_modify&quot; list, they can upload files and create new 
+        directories. But can not perform rename, delete, rmdir, chmod.</li>
+    </ul>
+    <p>Example 1:</p>
+    <p>Here is an example that there is a share named &quot;public&quot; and the path is 
+    /home/public, users in samba group have read privilege, root has write 
+    privilege:</p>
+<pre class="screen">[public]
+	path = /home/public
+	rw = root
+	ro = @samba
+</pre>
+    <p>Example 2:</p>
+    <p>Share name is private only wheel group can write, and is not browseable 
+    when LIST, but you can cd to private share even you can see it when ls.</p>
+<pre class="screen">[private]
+	path = /root/ftp
+	rw = @wheel
+	browseable = no</pre>
+	    <p>Example 3:</p>
+    <p>The share name is upload. Users &quot;ftp&quot; and &quot;anonymous&quot; can upload files or 
+    create new directories. But they are not able to see the files in the share. 
+    They can not download nor modify existed files. Users in &quot;wheel&quot; group have 
+    full privileges.</p>
+<pre class="screen">[upload]
+	path=/home/upload"
+	rw=ftp,@wheel
+	disable_ls=ftp
+	disable_modify=ftp
+	disable_download=ftp</pre>
+	<p>
+    Notice that the anonymous users &quot;ftp&quot; and &quot;anonymous&quot; are mapped to real 
+    user &quot;ftp&quot;. If you would like to set the privilege for these users, you 
+    would have to use user &quot;ftp&quot;.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: ChrootSet</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ChrootSet user path</tt></p>
+    <p>
+    <tt class="screen">
+    ChrootSet @group path</tt></p>
+    <p>
+    <tt class="screen">
+    ChrootSet @ path</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Users/Groups in the list will be applied to this session by changing its 
+    root directory with chroot(2) to that specified on the &quot;path&quot;.</p>
+    <p>The first field specifies a user or group name. If it is prefixed by an 
+    ``at&#39;&#39; sign, `@&#39;, it specifies a group name; the line will match each user 
+    who is a member of this group. As a special case, a single `@&#39; in this field 
+    will match any user. A username is specified otherwise.</p>
+    <p>Notice: The chrooted users will use Normal mode rather then SMB mode even 
+    they are set to use SMB mode. See option &quot;DefaultMode&quot;.</p>
+    <p>Here are some examples:</p>
+    <p>Example 1:</p>
+    <p>When user &quot;anonymous&quot; login, chroot to /var/spool/ftp</p>
+    <pre class="screen">ChrootSet anonymous /var/spool/ftp</pre>
+    </p>
+    <p>Example 2:</p>
+    <p>Members in &quot;ftpgroup&quot; group would be changed root directory to their home 
+    directory. For example, user alex&#39;s home directory is /home/alex, then it&#39;s 
+    root directory would be /home/alex. If user jack&#39;s home directory is 
+    /home/jack, its root directory would be /home/jack. We use &quot;~&quot; to represent 
+    user&#39;s home directory. The system will transfer it into real path.</p>
+    <pre class="screen">ChrootSet @ftpgroup ~</pre>
+    </p>
+    <p>Example 3:</p>
+    <p>Members of &quot;webusers&quot; group would be changed root directory to the &quot;public_html&quot; 
+    directory under their home directory, thus lowering possible impact on the 
+    system from intrinsic insecurity of FTP.</p>
+    <pre class="screen">ChrootSet @webusers ~/public_html</pre>
+    </p>
+    <p>Example 4:</p>
+    <p>All users (a single `@&#39;) will be chroot to their home directory.</p>
+    <pre class="screen">ChrootSet @ ~</pre>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: ShowSymlink</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShowSymlink Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>When ShowSymlinks is No, we won&#39;t show symbolic links when listing files.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>ShowSymlink No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: ShowDotFiles</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShowDotFiles Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Do you want to show dot files (file/dir name start with ., e.g. &quot;.cshrc&quot;) 
+    when list files.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>ShowDotFiles Yes</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: SupportUTF8Client</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SupportUTF8Client Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Support UTF-8 client or not. Traditional FTP does not support UTF-8. It 
+    uses codepage for the filenames. In RFC 2640, it starts to support UTF-8 FTP 
+    client.</p>
+    <p>If you enable SupportUTF8Client, we will tell client this FTP server 
+    supports UTF-8. The client can choose to use UTF-8 or not by sending the 
+    OPTS UTF8 command.</p>
+    <p>You would have to set the CharsetEncoding. We will use the encoding to 
+    convert UTF-8 to codepage or codepage to UTF8.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>SupportUTF8Client No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: UsingUTF8FileSystem</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    UsingUTF8FileSystem Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Whether the file system is UTF8 format or not. If the filesystem is using 
+    UTF-8 filename, we don&#39;t have to convert the filename from UTF-8 into 
+    codepage when client is using UTF-8 FTP.</p>
+    <p>If client is using non-UTF-8 FTP but our filesystem is UTF-8, we have to 
+    do some filename conversion. You would have to set the CharsetEncoding. We 
+    will use the encoding to convert UTF-8 to codepage or codepage to UTF8.</p>
+    <p>Please note that your smbftpd_share.conf should be in UTF-8 format if you 
+    are using UTF-8 filesystem.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>UsingUTF8FileSystem No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: CharsetEncoding</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    CharsetEncoding&nbsp;&nbsp;&nbsp; encoding</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The charset encoding will be used to convert strings between codepage and 
+    utf8. We will have UTF8 or non-UTF8 client and UTF8 or non-UTF8 filesystem. 
+    We have to do some filename conversion.</p>
+    <p>Here are some suggested values for the encoding:</p>
+    <ul>
+      <li>For English, French, German, Italian, Spanish, Portuguese, Danish, 
+      Norwegian, Swedish, Dutch, and other western Europe languages: CP1252</li>
+      <li>For Traditional Chinese: CP950</li>
+      <li>CharsetEncoding CP950</li>
+      <li>For Simplified Chinese: CP936</li>
+      <li>For Russian: CP1251</li>
+      <li>For Japanese: CP932</li>
+      <li>For Korean: CP949</li>
+      <li>For Greek: CP1253</li>
+      <li>For Czech: CP1250</li>
+    </ul>
+    <p>Other posible values: <a href="http://www.gnu.org/software/libiconv/">
+    http://www.gnu.org/software/libiconv/</a></p>
+    <p>MS Windows locale:
+    <a href="http://msdn2.microsoft.com/en-us/library/ms903928.aspx">
+    http://msdn2.microsoft.com/en-us/library/ms903928.aspx</a></p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>Not set</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="anonymous">Anonymous Control</a></p>
+    <p class="chtitle4">Option: AnonymousLogin</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousLogin Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Does the server allow anonymous users login. The anonymous accounts are 
+    &quot;anonymous&quot; and &quot;ftp&quot;. To enable anonymous account, you must add an user 
+    &quot;ftp&quot;.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>AnonymousLogin No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: AnonymousOnly</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousOnly Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Does the server allow ONLY anonymous users login.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>AnonymousOnly No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: AnonymousReadOnly</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousReadOnly Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>When anonymous user login, all commands which may modify the local file 
+    system are disabled.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>AnonymousReadOnly No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="transfer">File Transfer Control</a></p>
+    <p class="chtitle4">Option: TransferLog</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    TransferLog path/to/logfile</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The TransferLog is the file that will record download/upload log. When 
+    TransferLog is specified, we will log all download and upload information in 
+    the file.</p>
+    <p>We will log the following information: Current time, remote host, user, 
+    command, transfer type(ASCII or Binary), transfer time, bytes, and filename.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>None</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: MaxDownloadRate</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxDownloadRate @grou|user rate</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Configure transfer rate for download. The rate is in KB/s. You may set 
+    multiple MaxDownloadRate lines to control rates for different users and 
+    groups.</p>
+    <p>The first field specifies a user or group name. If it is prefixed by an 
+    ``at&#39;&#39; sign, `@&#39;, it specifies a group name; the line will match each user 
+    who is a member of this group. As a special case, a single `@&#39; in this field 
+    will match any user. A username is specified otherwise. For example:</p>
+    <pre class="screen">MaxDownloadRate @group100 100
+MaxDownloadRate anonymous 20
+MaxDownloadRate @friends 1000</pre>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>unlimited</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: MaxUploadRate</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxUploadRate @grou|user rate</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Configure transfer rate for users upload. The rate is in KB/s. You may 
+    set multiple MaxUploadRate lines to control rates for different users and 
+    groups.</p>
+    <p>The first field specifies a user or group name. If it is prefixed by an 
+    ``at&#39;&#39; sign, `@&#39;, it specifies a group name; the line will match each user 
+    who is a member of this group. As a special case, a single `@&#39; in this field 
+    will match any user. A username is specified otherwise. For example:</p>
+    <pre class="screen">MaxUploadRate @group100 100
+MaxUploadRate anonymous 20
+MaxUploadRate @friends 1000</pre>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>unlimited</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="ssl">SSL/TLS Control</a></p>
+    <p class="chtitle4">Option: SecurityPolicy</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SecurityPolicy secure|nosecure|both</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>This option allow you to enable/disable SSL/TLS. There are three options 
+    - secure, nosecure, and both.</p>
+    <ul>
+      <li>secure - Don&#39;t fall back into the non-secure mode if the TLS/SSL 
+      handshake fails.</li>
+      <li>nosecure - Disable the TLS/SSL encryption at all and allow only 
+      non-secure clients.</li>
+      <li>both - Allow both SSL/TLS encryption and non-secure clients.</li>
+    </ul>
+    <p>The default is to allow both secure and non-secure connections.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>SecurityPolicy nosecure</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: EncryptionType</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    EncryptionType tls|ssl|both</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>We support TLS (RFC2228) and SSL encryptions. This option allow you to 
+    set the which encryption protocol you would like to use.</p>
+    <ul>
+      <li>tls - Use only the RFC2228-compliant FTP-TLS negotiation mode; don&#39;t 
+      try to negotiate something different.</li>
+      <li>ssl - Use only the FTP-SSL compatibility mode (for early 
+      implementations of the FTP-SSL upgrade); don&#39;t try to negotiate something 
+      different.</li>
+      <li>both - Accept both FTP-TLS and FTP-SSL security extensions.</li>
+    </ul>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>EncryptionType both</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: NormalUserMustSecure</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NormalUserMustSecure Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>When NormalUserMustSecure is set to &quot;Yes&quot;, it require the TLS/SSL 
+    encryption for non-anonymous users.</p>
+    <p>The propose of SSL/TLS encryption is to protect user&#39;s password and data 
+    travel in network. Set this option on to force users using secure connection 
+    is a good idea.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>NormalUserMustSecure No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: AnonymDisableSecure</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymDisableSecure Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>Set the AnonymDisableSecure to &quot;Yes&quot; if you would like to disable the 
+    TLS/SSL encryption for anonymous users. Since the SSL/TLS is used to protect 
+    private data, there is no reason to apply data encryption on anonymous 
+    users.</p>
+    <p>Set this to &quot;Yes&quot; to save CPU resource and speed up anonymous 
+    connections.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>AnonymDisableSecure No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: SSLCertFile</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SSLCertFile /path/to/server.crt</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The certificate to use. This certificate will be passed to the client. If 
+    it is not specified, it will be default to /usr/local/etc/smbftpd/ssl.crt/server.crt.</p>
+    <p>You may use the Apache+SSL&#39;s certificate which is normally located in /usr/local/apache/conf/ssl.crt/server.crt.</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>SSLCertFile /usr/local/etc/smbftpd/ssl.crt/server.crt</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">Option: SSLKeyFile</p>
+    <p><tt class="chtitle4">Syntax:</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SSLKeyFile /path/to/server.key</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">Description:</tt></p>
+    <blockquote>
+    <p>The private key that matches the certificate specified by the SSLCertFile 
+    option. Both SSLCertFile and SSLKeyFile files are assumed to be in PEM 
+    format. Default is /usr/local/etc/smbftpd/ssl.key/server.key</p>
+    <p>You may use the Apache+SSL&#39;s private key if you are using its 
+    certificate. The Apache+SSL&#39;s private key is usually in: /usr/local/apache/conf/ssl.key/server.key</p>
+    </blockquote>
+    <p><tt class="chtitle4">Default:</tt></p>
+    <blockquote>
+    <p>SSLKeyFile /usr/local/etc/smbftpd/ssl.key/server.key</p>
+    </blockquote>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="02_installation.htm">Priv<br>
+    Installation</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">Index</a><br>
+    This document can be downloaded from 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a>.</td>
+    <td width="10%" align="right" valign="top"><a href="04_virtual_user.htm">Next<br>
+    Virtual User </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

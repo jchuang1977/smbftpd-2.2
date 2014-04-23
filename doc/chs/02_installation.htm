@@ -1,0 +1,193 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD 使用手册</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="01_introduction.htm">上一页<br>
+    简介</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="03_smbftpd.conf.htm">下一页<br>
+    smbftpd.conf </a></td>
+  </tr>
+</table>
+
+    <hr>
+
+    <p class="chtitle1">第二章 安装</p>
+
+    <p class="chtitle4">内容列表</p>
+    <blockquote>
+
+    <p>2.1 <a href="#require">系统需求</a></p>
+
+    <p>2.2 <a href="#compile">编译安装</a></p>
+
+    <p>2.3 <a href="#run">执行</a></p>
+    </blockquote>
+
+    <p>
+    <a name="require"><tt class="chtitle2">2.1 系统需求</tt></a></p>
+    <p>为了顺利安装 SmbFTPD，您的系统中必须有下列工具：</p>
+    <ul>
+      <li>Perl (Practical Extraction and Report Language)。在执行 configure 时，我们会使用
+      perl 指令来进行设定。</li>
+      <li>Berkeley Yacc (yacc 或是 byacc 指令)。</li>
+      <li>The GNU Compiler Collection (gcc)。</li>
+      <li>The GNU binary utilities (binutils)</li>
+      <li>OpenSSL 0.9.6 以上的版本 (非强制)，如果您要支持 SSL/TLS 加密，则必须确认系统中有 openssl 指令及函示库。</li>
+      <li>iconv 函示库 (非强制)，如果您要使用 UTF-8 文件名转换的功能才会用到。</li>
+      <li>MySQL 4.1 以上的版本 (非强制)，如果您要使用 MySQL 虚拟使用者才会用到 MySQL。</li>
+      <li>PostgreSQL 7.2 以上的版本 (非强制)，如果您要使用 PostgreSQL 虚拟使用者才会用到 PostgreSQL。</li>
+    </ul>
+    <p>我们在编译设定时会自动侦测您的系统，并依您的环境以决定是否要加入 SSL/TLS 支持或是其它非强制的功能。</p>
+
+    <p>
+    <a name="compile"><tt class="chtitle2">2.2 编译安装</tt></a></p>
+    <p>下载 SmbFTPD 后，解压缩后进行该目录。接着您就可以执行下列指令进行编译：</p>
+    <pre class="screen"># <tt class="userinput">./configure</tt>
+# <tt class="userinput">make</tt></pre>
+<p>configure 指令会侦测您的系统，并依您的环境以决定编译时所要加入的功能。例如，是否支持 IPv6、TCP Wrapper、或是
+PAM 等。</p>
+<p>configure 指令还有另外几个参数：</p>
+<pre class="screen"># <tt class="userinput">./configure --help</tt>
+Optional Features:
+   --with-mysql[=DIR]    Users database is a MySQL database (default=no)
+   --with-pgsql[=DIR]    Users database is a PostgreSQL database (default=no)
+   --with-ssl[=DIR]      Enable SSL/TLS support (default=no)
+   --with-iconv=[DIR]    Enable codepage to unicode conversion for UTF-8 FTP (default=no)
+   --prefix=PREFIX       Install architecture-independent files in PREFIX [/usr/local]
+</pre>
+<p>如果您要使用 MySQL，请加上 --with-mysql 的选项。要使用 SSL，则加入 --with-ssl 的选项。</p>
+<p>编译完成后，如果您支持 SSL/TLS，您必须有 SSL 凭证。如果您有安装 Apache+SSL，您也可以和 Apache
+共享它的凭证。如果您要产生凭证，您必须再执行下列指令以产生凭证。</p>
+<pre class="screen"># <tt class="userinput">make cert</tt></pre>
+<p>执行上述指令后，我们会先产生一个根凭证，再产生 FTP 所使用的凭证，接着再用我们产生的根凭证为 FTP
+用的凭证签章。全部都完成后，我们就可以使用下列指令来安装：</p>
+<pre class="screen"># <tt class="userinput">make install</tt></pre>
+    <p>如果您要执行 cross compile，可以在环境变量中设定 CC 的位置：</p>
+    <pre class="screen"># <tt class="userinput">env CC=/usr/local/powerpc-linux/bin/powerpc-linux-gcc \
+    LD=/usr/local/powerpc-linux/bin/powerpc-linux-ld \
+    RANLIB=/usr/local/powerpc-linux/bin/powerpc-linux-ranlib \
+    ./configure --with-ssl --with-iconv</tt>
+# <tt class="userinput">make</tt>
+# <tt class="userinput">make cert</tt>
+# <tt class="userinput">make install</tt></pre>
+    <p>在 make install 时，我们会安装 smbftpd 到 /usr/local/sbin 目录下，并安装 smbftpd.conf 及
+    smbftpd_share.conf 到 <tt class="filename">/usr/local/etc/smbftpd/</tt>
+    中。如果您使用 Linux，而 <tt class="filename">/etc/pam.d/ftpd</tt> 不存在，我们也会安装一份 ftpd 的 pam 档。因为像 Fedora 等 Linux
+    系统中并没有 ftpd 的 pam 档，但 smbftpd 可能会使用 PAM 认证。</p>
+    <p>如果您希望将 smbftpd 安装到其它目录而非 /usr/local，您可以在执行 configure 时，加上
+    --prefix=/path/to/your/dir 的参数。</p>
+    <p><a name="run"><tt class="chtitle2">2.3 执行</tt></a></p>
+    <p>在启动 SmbFTPD 之前，您应该先编辑 <tt class="filename">/usr/local/etc/smbftpd/smbftpd.conf</tt>，并依您的需求进行设定，如果您不修改设定，使用预设的设定档也可以运作。关于
+    smbftpd.conf 的设定请参考下一章的说明。</p>
+    <p>我们有二种方式启动 SmbFTPD，一种是使用 standalone daemon，另一种是使用 inetd。inetd 是 UNIX
+    系统中一个强大的「超级服务器」，我们可以使用它来管理许多系统服务，例如 telnet、ssh、ftp 等。大部份的系统服务都是使用 inetd
+    来启动，使用它的好处在于可以统一管理各种服务，并经由它来设定服务规则，例如是否要阻挡某些 IP 来源等。不过，使用 inetd
+    的方式缺点是每次有联机要求时，inetd 的 daemon 必须依联机的种类去执行相对映的指令，所以速度比较慢。</p>
+    <p>另一种启动 FTP 的方式是使用 standalone daemon，也就是直接执行 FTP daemon，当它接收到新的联机时，就 fork()
+    出来处理，这种方式比较快，比较适合专门的 FTP 服务器。</p>
+    <p>让我们先来看如何使用 inetd 的方式启动 SmbFTPD。inetd 的方式在 UNIX 系统中有二种 inetd
+    daemon，一种是比较古老的「inetd」，另一种是许多 Linux 套件使用的「xinetd」。在 BSD 中，是使用改良过的「inetd」，所以如果您使用
+    FreeBSD、NetBSD 等，请修改 <tt class="filename">/etc/inetd.conf</tt>
+    并加入下面这一行：etc大部份的 UNIX 系统要使用 inetd</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen">ftp     stream  tcp     nowait  root    /usr/local/sbin/smbftpd smbftpd </pre>
+        </td>
+      </tr>
+    </table>
+    <p>如果您使用的是 Linux，请新增一个文件名为 /etc/xinetd.d/smbftpd，并编辑其内容如下：</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen"># file: /etc/xinetd.d/smbftpd
+# default: off
+# description: SmbFTPD supports TLS/SSL for both control and data
+# connections, but also fully compatible with standard FTP protocol.
+service ftp
+{
+	disable     = no
+	flags       = REUSE
+	socket_type = stream
+	protocol    = tcp
+	wait        = no
+	user        = root
+	server      = /usr/local/sbin/smbftpd
+}
+</pre>
+        </td>
+      </tr>
+    </table>
+    <p>接下来请执行下列指令重跑 inetd：</p>
+    <pre class="screen"># <tt class="userinput">kill -1 `cat /var/run/inetd.pid`</tt></pre>
+    <p>如果您使用 xinetd，请使用下列指令重跑：</p>
+    <pre class="screen"># <tt class="userinput">kill -1 `cat /var/run/xinetd.pid`</tt></pre>
+
+    <p>如果您要使用 standalone 的方式启动 SmbFTPD，您可以使用下列指令：</p>
+    <pre class="screen"># <tt class="userinput">/usr/local/sbin/smbftpd -D</tt></pre>
+    <p>如果您的操作系统是 FreeBSD，除了上述方式外，您也可以使用编辑 /etc/rc.conf，并加入下列几行，以在开机时启动 SmbFTPD：</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen">smbftpd_enable="Yes"
+smbftpd_flags="-D"</pre>
+        </td>
+      </tr>
+    </table>
+    <p>接下来就可以使用下列指令看看是否能启动 SmbFTPD：</p>
+        <pre class="screen"># <tt class="userinput">/usr/local/etc/rc.d/smbftpd.sh start</tt></pre>
+    <p>如果您要停止 SmbFTPD：</p>
+        <pre class="screen"># <tt class="userinput">/usr/local/etc/rc.d/smbftpd.sh stop</tt></pre>
+    <p>另外，在启动 SmbFTPD 时，可以使用一些参数：</p>
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600" id="AutoNumber2">
+      <tr>
+        <td width="185" nowrap><b>参数</b></td>
+        <td width="412"><b>用途</b></td>
+      </tr>
+      <tr>
+        <td width="185" nowrap valign="top">-4</td>
+        <td width="412">只接受 IPv4 的联机。</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap valign="top">-6</td>
+        <td width="412">只接受 IPv6 的联机。</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap valign="top">-D</td>
+        <td width="412">使用 standalone daemon 而非 inetd 模式。对于一台较为忙碌的服务器，建议您使用
+        standalone 模式。</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap valign="top">-s /path/to/smbftpd.conf</td>
+        <td width="412">指定 smbftpd.conf 的位置。预设的 smbftpd.conf 位置在 <tt class="filename">/usr/local/etc/smbftpd/smbftpd.conf</tt>，您也可以指定不同的设定文件位置。</td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="01_introduction.htm">上一页<br>
+    简介</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">索引</a><br>
+    您可以在
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a> 取得本文件</td>
+    <td width="10%" align="right" valign="top"><a href="03_smbftpd.conf.htm">下一页<br>
+    smbftpd.conf </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

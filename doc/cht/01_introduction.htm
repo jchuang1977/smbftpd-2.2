@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD 使用手冊</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="index.htm">上一頁<br>
+    索引</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="02_installation.htm">下一頁<br>
+    安裝 </a></td>
+  </tr>
+</table>
+
+    <hr>
+
+    <p class="chtitle1">第一章 簡介</p>
+
+    <p class="chtitle4">內容列表</p>
+    <blockquote>
+
+    <p>1.1 <a href="#whatis">什麼是 SmbFTPD</a></p>
+
+    <p>1.2 <a href="#feature">功能及特色</a></p>
+    </blockquote>
+
+    <p><a name="whatis"><tt class="chtitle2">
+    1.1 什麼是 SmbFTPD</tt></a></p>
+    <p>SmbFTPD 是一套從 FreeBSD 的 FTP daemon 修改而成的軟體。它除了擁有原本 FreeBSD ftpd 
+    所有功能外，還有更多使用者權限控制、整合設定檔路徑及更多功能。另外，它也支援 SSL/TLS 加密的功能，該功能是由 
+    <a href="http://bsdftpd-ssl.sc.ru/">BSDftpd-ssl </a>移植而來。</p>
+    <p>SmbFTPD 和一般 FTP daemon 最大的不同在於它使用類似 Samba 的資料夾權限設定，您可以設定讓 FTP 使用者登入後所看到的目錄跟使用 
+    Windows 登入時一模一樣。也就是說 FTP 登入的使用者對於資料夾的存取權限和使用 Windows 登入 Samba 一模一樣。</p>
+    <p>而您也可以將 SmbFTPD 做為一般 FTP daemon 使用，或同時支援 Samba 模式。FreeBSD 的 FTP daemon 
+    本來效能就很好，修改過的 SmbFTPD 效能也十分優越，而且程式檔本身體積很小。</p>
+    <p><a name="feature"><tt class="chtitle2">1.2 功能及特色</tt></a></p>
+    <p>SmbFTPD 支援大多數的 Unix 系統，測試過  FreeBSD 5.x、FreeBSD 6.x、FreeBSD 7.x、Linux 2.4、Linux 
+    2.6、NetBSD 等。而且它非常易於 cross compile，您也可以安裝在非 x86 的平台上，目前測試過的平台有 
+    ARM、PowerPC、x86。</p>
+    <ul>
+      <li>效能優越</li>
+      <li>檔案很小 (約 90KB)，佔用記憶體空間小</li>
+      <li>支援 SSL/TLS 加密</li>
+      <li>支援虛擬的使用者，可以使用 MySQL、PostgreSQL、或文字檔存放使用者。</li>
+      <li>支援 UTF8 及非 UTF8 的 FTP client 和檔案系統間的檔名轉換</li>
+      <li>可以更改 port</li>
+      <li>限制最多連線數量及同一個 IP 最多連線數目</li>
+      <li>針對使用者、群組做流量控制</li>
+      <li>針對使用者、群組設定 chroot 的路徑</li>
+      <li>類似 Samba 的資料夾權限，可以針對目錄設定使用者的讀寫權限</li>
+      <li>限制 FTP 指令的使用，如上傳、下載等</li>
+      <li>匿名使用者登入</li>
+      <li>諸多匿名使用者的權限控制</li>
+      <li>同時支援 Samba 權限控制模式及一般 FTP 模式</li>
+      <li>可以拒絕某些使用者 &quot;ls&quot; 出某一個 share 下的檔案</li>
+      <li>可以拒絕某些使用者下載檔案或是修改已存在的檔案</li>
+      <li>可以讓某個資料夾處於只能上傳的模式</li>
+    </ul>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="index.htm">上一頁<br>
+    索引</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">索引</a><br>
+    您可以在 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a> 取得本文件</td>
+    <td width="10%" align="right" valign="top"><a href="02_installation.htm">下一頁<br>
+    安裝 </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

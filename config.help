@@ -1,0 +1,16 @@
+Optional Features:
+   --with-mysql[=DIR]    Users database is a MySQL database (default=no)
+   --with-pgsql[=DIR]    Users database is a PostgreSQL database (default=no)
+   --with-ssl[=DIR]      Enable SSL/TLS support (default=no)
+   --with-iconv=[DIR]    Enable codepage to unicode conversion for UTF-8 FTP (default=no)
+   --prefix=PREFIX       Install architecture-independent files in PREFIX [/usr/local]
+
+Some influential environment variables:
+   CC          C compiler command
+   AR          ar command
+   RANLIB      ranlib command
+   CFLAGS      C compiler flags, e.g. -I<include dir> if your header file
+               is in a nonstandard directory <include dir>
+   LDFLAGS     Linker flags, e.g. -L<lib dir> if you have libraries in a
+               nonstandard directory <lib dir>
+

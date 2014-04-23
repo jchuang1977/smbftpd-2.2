@@ -1,0 +1,7 @@
+CC=@CC@
+AR=@AR@
+RANLIB   = @RANLIB@
+PREFIX   = @PREFIX@
+CFLAGS  = -O2 -Wall -Wshadow -Wredundant-decls -pipe @EXTRACFLAGS@
+LDFLAGS += @EXTRALDFLAGS@
+

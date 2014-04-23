@@ -1,0 +1,935 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD 使用手冊</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="02_installation.htm">上一頁<br>
+    安裝</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="04_virtual_user.htm">下一頁<br>
+    虛擬使用者 </a></td>
+  </tr>
+</table>
+
+<hr>
+
+    <p class="chtitle1">第三章 smbftpd.conf</p>
+
+    <p class="chtitle4">內容列表</p>
+    <ul>
+      <li><a href="#system">系統區段</a></li>
+      <li><a href="#user_login">使用者登入控制</a></li>
+      <li><a href="#share_access">FTP 目錄權限控制</a></li>
+      <li><a href="#anonymous">匿名使用者控制</a></li>
+      <li><a href="#ssl">檔案傳輸控制</a></li>
+      <li><a href="#ssl">SSL/TLS 控制</a></li>
+</ul>
+    <p class="chtitle2"><a name="system">系統區段</a></p>
+    <p><tt class="chtitle4">選項名稱： ServerName</tt></p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <tt class="screen">
+<blockquote>
+  <p>ServerName &quot;Server Name&quot;</p>
+</blockquote>
+</tt>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項可以用來定義您的伺服器名稱，當使用者登入後將看到：</p>
+    <p class="screen">Connected to localhost.com.<br>
+    220 <font color="#FF0000"><b>Server Name</b></font> FTP server (SmbFTPD Ver 
+    0.9) ready.<br>
+    Name (localhost:alex):</p>
+    <p>如果您沒有設定 ServerName，則 SmbFTPD 將顯示系統的 Hostname。</p>
+    </blockquote>
+
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無 (系統的 Hostname)</p>
+    </blockquote>
+    <hr>
+    <p><tt class="chtitle4">選項名稱： ShowProgramVersion</tt></p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <tt class="screen">
+<blockquote>
+  <p>ShowProgramVersion Yes|No</p>
+</blockquote>
+</tt>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項可以用來設定是否要顯示 SmbFTPD 的版本資訊，則設為 No，則不會顯示。</p>
+    <p class="screen">Connected to localhost.com.<br>
+    220 Server Name FTP server <font color="#FF0000"><b>(SmbFTPD Ver  2.0)</b></font> ready.<br>
+    Name (localhost:alex):</p>
+    <p>如果您沒有設定 ShowProgramVersion，則 SmbFTPD 預設將顯示版本資訊。</p>
+    </blockquote>
+
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>ShowProgramVersion&nbsp;&nbsp;&nbsp; Yes</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： ListenOnAddress</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <tt class="screen">
+    <blockquote>
+    <p>ListenOnAddress 192.168.0.1</p>
+    </blockquote>
+    </tt>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當使用 -D 模式 (standalone) 啟動 FTP 時，您可以指定只接受連到這個位址的連線。例如，假設您有二張網路卡，一個 IP 是 
+    172.16.1.1，另一個是 61.62.63.64，您可以設定 ListenOnAddress 172.16.1.1 以表示只接受連到這個 IP 
+    的連線。</p>
+    <p>如果您要接受所有連線，則請移除這個選項。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無 (接受所有連線)</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： Port</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    Port prot_num|service</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當使用 -D 模式 (standalone) 啟動 FTP 時，您可以指定 SmbFTPD 所要使用的 Port。一般的 FTP port 為 
+    21，您也可以使用 ftp 這個字串表示，系統會自動去 /etc/service 中查到相對的 port。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>Port ftp</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： Umask</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    Umask umask</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當使用者建立檔案或目錄時，所要使用的 umask。例如，您想要讓使用者新增檔案時的權限為 644，則設 umask 為 022。詳細關於 
+    umask 的設定請 man 2 umask。這個選項的值必須為 8 進位的數字，如 022、027 等。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>Umask 022</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： PidFile</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    PidFile /some/where/file</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這是您要存放 smbftpd pid 檔的地方，當使用 daemon 模式時，我們會將 smbftpd 的 process id 寫到這個檔案中。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無 (不寫 pid)</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： DebugMode</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DebugMode Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否要用 syslog 記錄更多除錯用的訊息。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>DebugMode No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： LogCommand</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    LogCommand Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否要使用 syslog 的 LOG_FTP 記錄使用者執行過的 FTP 指令。如果您將這個指令設為 Yes， 則使用者所執行的 
+    retrieve(get)、store(put)、append、delete、mkdir、rmdir、rename 
+    等都會被選錄下來，並用記錄該指令的檔名參數。在 FreeBSD 中，syslogd 會將這些記錄在 /var/log/xferlog 中。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>LogCommand No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： DoWtmpLog</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DoWtmpLog Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否要將 ftp 使用者登入記錄寫在 /var/log/wtmp 中。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>DoWtmpLog No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： DisableEPSV</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DisableEPSV Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否要停用 EPSV 這個指令。如果您的伺服器位於一些舊的防火牆後面，而一直無法連線，您可以設著停用 EPSV。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>DisableEPSV No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： RestrictedPorts</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    RestrictedPorts Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>檔這個選項設為 No 時，smbftpd 將不檢查限制使用者使用的連結埠。我們預設限制使用者在使用 PORT 命令時，只能使用 
+    unprivileged ports (&gt; 1024)，不過這樣將違反 FTP protocol。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>RestrictedPorts Yes</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： PassiveModePortRange</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    PassiveModePortRange&nbsp;&nbsp;&nbsp; low-high</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>您可以設定 SmbFTPD 在 Passive Mode 下所要使用的連接埠範圍。如果您的 FTP 伺服器位於 NAT 後，您可以在 router 
+    上設定將這裡所設定的連接埠範圍也轉到內部來。</p>
+    <p>假設您要使用 Port 40000 到 Port 50000，您可以設定：</p>
+    <p>
+    <tt class="screen">
+    PassiveModePortRange&nbsp;&nbsp;&nbsp; 40000-50000</tt></p>
+    <p>請注意連接埠範圍應該介於 1024 到 65535 之間。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="user_login">使用者登入控制</a></p>
+    <p class="chtitle4">選項名稱： MaxConnection</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxConnection number</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項可以讓您控制最多同時連線的數量。如果 MaxConnection 大於 0，則在連線數目到達您所設定的值時，使用者就無法再登入。如果值為 
+    0，則表示不做任何限制。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>MaxConnection 0</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： MaxConnectionPerIP</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxConnectionPerIP number</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項可以讓您控制每一個連線來源 IP 最多同時連線的數量。如果值為 
+    0，則表示不做任何限制。如果您要使用這個設定，您必須先設定 MaxConnection。</p>
+    <p>但不建議您將這個值設為小於 2，因為許多 FTP client 都會同時開二個以上的連線。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>MaxConnectionPerIP 0</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： VirtualUserMapping</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserMapping&nbsp;&nbsp;&nbsp; username</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>如果您不希望使用真實的使用者登入 FTP，您可以設定讓每一個登入的使用者都對映到同一個真實使用者。首先，您必須設定虛擬使用者的認證方式 (設定 
+    VirtualUserAuthMethod)，接著設定 VirtualUserMapping 
+    以指定要將虛擬使用者對映到什麼身份。如此一來，虛擬使用者所建立的檔案，或是在 Unix 檔案系統上的存取權限全部都會變成這個選項所設定的使用者身份。</p>
+    <p>例如，您要使用 MySQL 進行身份認證，並將登入的使用者都對映到 ftp 這個真實使用者：</p>
+    <p>
+    <tt class="screen">
+    VirtualUserMapping&nbsp;&nbsp;&nbsp; ftp</tt></p>
+    <p>請注意，您如果有設定 VirtualUserMapping，您也必須設定 VirtualUserAuthMethod 及 
+    VirtualUserAuthConfig。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： VirtualUserAuthMethod</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthMethod&nbsp;&nbsp;&nbsp; mysql|pgsql|text</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>設定虛擬使用者的認證方式，您可以使用 MySQL、PostgreSQL、或是純文字檔存放虛擬使用者的資料 (帳號、密碼、群組、家目錄)。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： VirtualUserAuthConfig</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /path/to/the/VirtualUserAuthMethod.conf</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>設定 VirtualUserAuthMethod 中所使用者認證方式的設定檔所在路徑。例如，如果使用 MySQL：</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_mysql.conf</tt></p>
+    <p>如果使用 PostgreSQL：</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_pgsql.conf</tt></p>
+    <p>如果使用純文字檔：</p>
+    <p>
+    <tt class="screen">
+    VirtualUserAuthConfig&nbsp;&nbsp;&nbsp; /usr/local/etc/smbftpd/smbftpd_user.conf</tt></p>
+    <p>
+    如果您要使用純文字檔，您可以使用 smbftpd-user 這個指令來建立/編輯/刪除使用者。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： RequireValidShell</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    RequireValidShell Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當 RequireValidShell 為 Yes 時，使用者必須有合法的 shell 才可以登入。合法的 shell 是以 
+    getusershell(3) 這個函數取得，大多數的作業系統中，合法的 shell 都被定義在 /etc/shells 中。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>RequireValidShell No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： EmptyPasswdLogin</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    EmptyPasswdLogin Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否允許空密碼的使用者登入。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>EmptyPasswdLogin No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： NoLoginList</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NoLoginList MinUID<br>
+    NoLoginList /path/to/no_login_ftp_users<br>
+    NoLoginList user1,user2,@group1,@group2</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>設定您不想讓其登入的使用者，在 NoLoginList 中的使用者或群組不可以登入。</p>
+    <p>NoLoginList 的參數可以是一個檔案、最小的 UID、或是一個使用者及群組名單。</p>
+    <ul>
+      <li>如果是使用者或是群組，如果是設定群組，請在群組名稱前加上 @。當要設定多個使用者或群組時，請使用逗號 , 分開。</li>
+      <li>如果是數字，則視為可以登入的最小 UID，如果使用者 UID &lt; MiniUID，則不允許登入。</li>
+      <li>如果設定的值是以 / 為開頭的檔案絕對路徑，則使用檔案中的使用者群組設定。</li>
+    </ul>
+    <p>如果您使用檔案，檔案中列出的每一行都分別為一個使用者或群組。例如，您可以建立 /etc/ftpusers，檔案內容如下：</p>
+    <p>
+    <tt class="screen">
+    user1<br>
+    user2<br>
+    @group1<br>
+    @group2</p>
+    </tt>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NoLoginList 500</tt></p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： TimeOut</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    TimeOut seconds</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當使用者超過這個時間沒有任何動作時，則中斷連線。單位為秒。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>TimeOut 900</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： MaxTimeOut</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxTimeOut seconds</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>使用者可以自行設定 timeout 的時間，但我們可以在這裡設定最長 timeout 的時間。預設是 2 小時。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>MaxTimeOut 7200</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="share_access">FTP 目錄權限控制</a></p>
+    <p class="chtitle4">選項名稱： DefaultMode</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    DefaultMode SMB|Normal</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>SmbFTPD 有二種模式，一個是 SMB mode，另一個是 Normal mode。在 SMB 模式中，SmbFTPD 會使用類似 Samba 
+    的共用資料夾權限設定，系統會讀取 ShareConfPath 中的使用者目錄權限控制來設定他對於資料夾的存取權限。而 Normal 模式中，SmbFTPD 就像一般 FTP Daemon 一樣。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>DefaultMode Normal</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： ExceptionList</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ExceptionList user1,user2,@group1,@group2</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>您可以在 ExceptionList 中設定不要使用 DefaultMode 的使用者及群組。例如，您如果希望所有人都使用 SMB 模式，但群組 
+    wheel 要使用一般模式，則請將 DefaultMode 設為 SMB，再在 ExceptionList 中設定 @wheel 即可。</p>
+    <p>ExceptionList 的參數可以是使用者或群組，如果是群組的話，請在群組名稱前加上 @。例如：</p>
+    <p>ExceptionList user1,user2,@group1,@group2</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： ShareConfPath</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShareConfPath /some/where/smbftpd_share.conf</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>設定資料夾設定的 smbftpd_share.conf 所在路徑。如果您設定 DefaultMode 為 SMB，或是 DefaultMode 為 Normal 
+    但有 ExceptionList，則一定要指定 smbftpd_share.conf 的所在路徑。</p>
+    <p>我們會檢查 smbftpd_share.conf 中的下列關鍵設定：</p>
+      <ul>
+        <li>path：資料夾的路徑。</li>
+        <li>rw：可以有寫入權限的使用者或群組。</li>
+        <li>ro：可以有唯讀權限的使用者或群組。</li>
+        <li>browseable：資料夾是否要設為隱藏。若設為 no，則使用者在根目錄 ls 時，將看不到該資料夾，但依然可以 cd 到該資料夾中。</li>
+        <li>disable_download：設定不可以下載的使用者。若使用者可以讀取該資料夾內容，您還可以設定讓它無法執行下載的動作。</li>
+        <li>disable_ls：設定在資料夾中執行 ls 時，不可以看到資料夾內容的使用者及群組。</li>
+        <li>disable_modify：設定不可以修改該資料夾中的檔案或目錄的使用者及群組。如果該使用者具有讀寫的權限，但又在此列表中，則該使用者只能上傳檔案或是建立新的目錄，而無法執行 
+        rename、delete、rmdir、chmod 等指令。</li>
+      </ul>
+    <p>範例一：</p>
+    <p>這個範例是有一個資料夾名為 public，其所在目錄為 /home/public，在 samba 群組中的使用者可以有唯讀的權限，而 root 
+    可以有寫入的權限。</p>
+<pre class="screen">[public]
+	path = /home/public
+	rw = root
+	ro = @samba
+</pre>
+    <p>範例二：</p>
+    <p>資料夾名稱為 private，只有 wheel 群組的人可以寫入，而且這個資料夾是隱藏的，wheel 群組的人登入後使用 ls 
+    看不到這個資料夾，但是可以 cd 進去資料夾中。</p>
+<pre class="screen">[private]
+	path = /root/ftp
+	rw = @wheel
+	browseable = no</pre>
+    <p>範例三：</p>
+    <p>資料夾名稱為 upload，
+    使用者「ftp」及「anonymous」只能上傳檔案或建立新目錄，但是無法看到該資料夾中的內容，也不可以下載或是修改現有的檔案。但在使用者「wheel」群組中的使用者可以具有全部的讀寫權限。</p>
+<pre class="screen">[upload]
+	path=/home/upload"
+	rw=ftp,@wheel
+	disable_ls=ftp
+	disable_modify=ftp
+	disable_download=ftp</pre>
+	<p>
+    請注意，匿名使用者「ftp」及「anonumous」會被對映到真實的使用者「ftp」，如果您要設定的是匿名的使用者「ftp」及「anonymous」，請使用「ftp」這個使用者。</p>
+	<p>
+    如果您設定某個使用者對於某個資料夾有寫入的權限，但該使用者卻無法寫入，因為除了 SmbFTPD 的權限控制外，您還必須對資料夾的 UNIX 
+    權限做一些設定，讓該資料夾的 UNIX 權限允許該使用者寫入。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：  ChrootSet</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ChrootSet user path</tt></p>
+    <p>
+    <tt class="screen">
+    ChrootSet @group path</tt></p>
+    <p>
+    <tt class="screen">
+    ChrootSet @ path</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>在這個列表中的使用者或群組會被 chroot 
+    到您所指定的路徑中，也就是讓它將您所設定的路徑做為根目錄，使用者無法到該路徑以外的地方。如果有需要，您可以同時設定多條 ChrootSet 的規則。</p>
+    <p>這個參數的第一個欄位是使用者名稱或群組，如果在名稱之前加上 
+    @，表示是群組，所有在該群組中的使用者都會被套用到群組的設定中。而另一個特別的用法是只有一個 @ 符號，表示所有使用者都會被套用到這個設定中。</p>
+    <p>請注意，被設定為 chroot 的使用者就算 DefaultMode 被歸類為 SMB mdoe 也一定會被強制使用 Normal mode。</p>
+    <p>這裡有幾個設定的範例：</p>
+    <p>範例一：</p>
+    <p>使用者 anonymous 登入時，將它 chroot 到 /var/spool/ftp</p>
+    <pre class="screen">ChrootSet anonymous /var/spool/ftp</pre>
+    </p>
+    <p>範例二：</p>
+    <p>所有群組為 ftpgroup 的使用者都使用他們的家目錄 (home) 做為根目錄。例如，使用者 alex 的家目錄為 /home/alex，則其根目錄為 
+    /home/alex，而 jack 則是 /home/jack。我們以 ~ 符號表示家目錄，系統會自動轉換為真正的路徑。</p>
+    <pre class="screen">ChrootSet @ftpgroup ~</pre>
+    </p>
+    <p>範例三：</p>
+    <p>所有 webusers 這個群組的人都以其家目錄下的 public_html 為根目錄。這對於您要開放 FTP 
+    給某些使用者，但又不想讓他們去存取系統中其它路徑時十分有用。</p>
+    <pre class="screen">ChrootSet @webusers ~/public_html</pre>
+    </p>
+    <p>範例四：</p>
+    <p>所有使用者都必須以其家目錄為根目錄。</p>
+    <pre class="screen">ChrootSet @ ~</pre>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： ShowSymlink</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShowSymlink Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當 ShowSymlink 為 No ，我們在使用者 ls 時不會列出 symbolic link 的檔案或目錄。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>ShowSymlink No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： ShowDotFiles</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    ShowDotFiles Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否要顯示檔案或目錄名稱開頭為 &quot;.&quot; 的檔案。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>ShowDotFiles Yes</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： SupportUTF8Client</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SupportUTF8Client Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否支援 UTF-8 的客所端連線。傳統的 FTP 是使用 codepage 來傳輸檔案，所以檔名同時不能出現各國語言。RFC 2640 開如支援 
+    UTF-8 的 FTP client。</p>
+    <p>如果您將 SupportUTF8Client 設為 Yes，我們會判斷 client 及本地檔案系統來決定是否要進行 codepage 和 
+    UTF-8 的轉換。所以，您必須再設定 CharsetEncoding，我們會使用 CharsetEncoding 來做為轉換的依據。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>SupportUTF8Client No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： UsingUTF8FileSystem</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    UsingUTF8FileSystem Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>本地所使用的檔案名稱是否為 UTF-8。如果檔案名稱是 UTF-8，當 client 使用非 UTF-8 連線時，我們會使用 
+    CharsetEncoding 的設定來將檔名轉成 UTF-8。反之，如果檔案系統不是 UTF-8，但 client 是 
+    UTF-8，我們則會將檔名轉為非 UTF-8。</p>
+    <p>請注意，如果您使用 UTF-8 的檔案系統，則 smbftpd_share.conf 內容也必須是 UTF-8。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>UsingUTF8FileSystem No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱： CharsetEncoding</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    CharsetEncoding encoding</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>在進行 codepage 轉換成 UTF-8 時，要使用何種編碼進行轉換。</p>
+    <p>這裡有幾個編碼建議：</p>
+    <ul>
+      <li>如果您使用英文、法文、德文、義大利文、西班牙文、葡萄牙文、丹麥文、挪威文、瑞典語、荷蘭文、或是其它的西歐語系，請設為 CP1252。</li>
+      <li>如果您使用繁體中文，請設為 CP950。</li>
+      <li>如果您使用簡體中文，請設為 CP936。</li>
+      <li>如果您使用俄羅斯語，請設為 CP1251。</li>
+      <li>如果您使用日本語，請設為 CP932。</li>
+      <li>如果您使用韓文，請設為 CP949。</li>
+      <li>如果您使用希臘文，請設為 CP1253。</li>
+      <li>如果您使用捷克文，請設為 CP1250。</li>
+    </ul>
+    <p>您可以在這裡找到更多可能的設定值：http://www.gnu.org/software/libiconv/</p>
+    <p>另外，這是 MS Windows 
+    編碼設定：http://msdn2.microsoft.com/en-us/library/ms903928.aspx</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="anonymous">匿名使用者控制</a></p>
+    <p class="chtitle4">選項名稱：  AnonymousLogin</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousLogin Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否允許匿名使用者登入。匿名的使用者帳號為 ftp 或 anonymous。如果您要允許匿名使用者登入，您必須先新增一個 ftp 的系統使用者。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>AnonymousLogin No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：  AnonymousOnly</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousOnly Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>是否只允許匿名使用者登入。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>AnonymousOnly No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：  AnonymousReadOnly</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymousReadOnly Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當匿名使用者登入時，進入唯讀模式，不允許匿名使用者進行會變更檔案系統的指令。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>AnonymousReadOnly No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="transfer">檔案傳輸控制</a></p>
+    <p class="chtitle4">選項名稱：  TransferLog</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    TransferLog /var/run/smbftpd.log</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項用來設定使用者上傳及下載的檔案記錄。您可以設定當使用者下載或上傳檔案時，將它所上傳或下載的檔名、傳輸時間、大小等資料寫在這個檔案中。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無記錄</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：  MaxDownloadRate</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxDownloadRate @grou|user rate</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>您可以針對使用者及群組設定最大的下載頻寬。頻寬 rate 的單為是 KB/s。您也可以設定多條 MaxDownloadRate 規則。</p>
+    <p>這個選項的第一個參數可以是使用者或群組，如果是群組，則名稱開頭必須加上 @。而若只有一個 @ 符號，表示所有使用者都要套用到該規則。例如：</p>
+    <pre class="screen">MaxDownloadRate @group100 100
+MaxDownloadRate anonymous 20
+MaxDownloadRate @friends 1000</pre>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無限制</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    MaxUploadRate</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    MaxUploadRate @grou|user rate</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>您可以針對使用者及群組設定最大的上傳頻寬。頻寬 rate 的單為是 KB/s。您也可以設定多條 MaxDownloadRate 規則。</p>
+    <p>這個選項的第一個參數可以是使用者或群組，如果是群組，則名稱開頭必須加上 @。而若只有一個 @ 符號，表示所有使用者都要套用到該規則。例如：</p>
+    <pre class="screen">MaxUploadRate @group100 100
+MaxUploadRate anonymous 20
+MaxUploadRate @friends 1000</pre>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>無限制</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle2"><a name="ssl">SSL/TLS 控制</a></p>
+    <p class="chtitle4">選項名稱：    SecurityPolicy</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SecurityPolicy secure|nosecure|both</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項可以讓您設定是否要啟用 SSL/TLS 加密。您可以
+    強制一定要使用加密連線，或是關閉加密功能，或是同時允許加密及非加密模式。各種模式的說明如下：</p>
+    <ul>
+      <li>secure：只允許加密連線。</li>
+      <li>nosecure：只允許非加密連線。</li>
+      <li>both：同時允許加密及非加密連線。</li>
+    </ul>
+    <p>預設值是同時允許加密及非加密連線。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>SecurityPolicy nosecure</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    EncryptionType</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    EncryptionType tls|ssl|both</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當您要使用加密連線時，您可以選擇要支援哪一種加密模式。SmbFTPD 支援二種模式：SSL 及 
+    TLS，您可以使用下列設定值以選擇要使用另一種模式：</p>
+    <ul>
+      <li>TLS：只使用 RFC 2228 所定義的 FTP-TLS 模式。</li>
+      <li>SSL：只支援 FTP-SSL 模式。</li>
+      <li>Both：同時支援 SSL 及 TLS。</li>
+    </ul>
+    <p>預設值是同時支援 SSL 及 TLS。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>EncryptionType both</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    NormalUserMustSecure</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    NormalUserMustSecure Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當 NormalUserMustSecure 設為「Yes」時，表示一般使用者登入時一定要使用加密的連線，否則無法登入。</p>
+    <p>我們在 FTP 服務中使用 SSL/TLS 
+    的目的是為了避免使用者的機密資料在網路上以明碼流傳，為了強制所有使用者都使用比較安全的模式連線，您可以將這個選項設為「Yes」。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>NormalUserMustSecure No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    AnonymDisableSecure</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    AnonymDisableSecure Yes|No</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>當 AnonymDisableSecure 設為「Yes」時，系統將不允許匿名的使用者使用加密的連線。</p>
+    <p>既然 SSL/TLS 
+    的目的是避免使用者資料在網路上流傳，而匿名使用者是任何人都可以使用，保護匿名使用者的資料似乎比較不需要。所以您可以將這個選項設為「No」，以避免匿名使用者也使用加密連線登入，徒然耗費 
+    CPU 的資源。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>AnonymDisableSecure No</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    SSLCertFile</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SSLCertFile /path/to/server.crt</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>設定所要使用的憑證，這個憑證會被送到客戶端做為加密用。如果您沒有設定這個選項，預設會使用 /usr/local/etc/smbftpd/ssl.crt/server.crt。</p>
+    <p>您也可以和 Apache+SSL 共用憑證，Apache 的 SSL 憑證通常位於 /usr/local/apache/conf/ssl.crt/server.crt。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>SSLCertFile /usr/local/etc/smbftpd/ssl.crt/server.crt</p>
+    </blockquote>
+    <hr>
+    <p class="chtitle4">選項名稱：    SSLKeyFile</p>
+    <p><tt class="chtitle4">語法：</tt></p>
+    <blockquote>
+    <p>
+    <tt class="screen">
+    SSLKeyFile /path/to/server.key</tt></p>
+    </blockquote>
+    <p><tt class="chtitle4">說明：</tt></p>
+    <blockquote>
+    <p>這個選項是用來設定您上述設定的憑證所對映的 private key。這個 private key 和憑證是成對的，預設是在 /usr/local/etc/smbftpd/ssl.key/server.key。</p>
+    <p>如果您使用 Apache SSL 憑證，則這裡也必須設定使用 Apache 的 key，通常位於 /usr/local/apache/conf/ssl.key/server.key。</p>
+    </blockquote>
+    <p><tt class="chtitle4">預設值：</tt></p>
+    <blockquote>
+    <p>SSLKeyFile /usr/local/etc/smbftpd/ssl.key/server.key</p>
+    </blockquote>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="02_installation.htm">上一頁<br>
+    安裝</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">索引</a><br>
+    您可以在 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a> 取得本文件</td>
+    <td width="10%" align="right" valign="top"><a href="04_virtual_user.htm">下一頁<br>
+    虛擬使用者 </a></td>
+  </tr>
+</table>
+</body>
+
+</html>

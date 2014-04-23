@@ -1,0 +1,693 @@
+#!/bin/sh
+# Copyright 2003-2005 Wang, Chun-Pin All rights reserved.
+CurDir=`pwd`
+ConfigH=${CurDir}/include/config.h
+ConfigHIn=${CurDir}/include/config.h.in
+Makefile=${CurDir}/Makefile.inc
+MakefileIn=${CurDir}/Makefile.inc.in
+
+if [ -z "$CC" ]; then
+	CC=gcc
+fi
+if [ -z "$AR" ]; then
+	AR=ar
+fi
+if [ -z "$RANLIB" ]; then
+	RANLIB=ranlib
+fi
+EXTRACFLAGS="$CFLAGS"
+EXTRALDFLAGS="$LDFLAGS"
+
+perl -v > /dev/null 2>&1
+if [ $? != 0 ]; then
+	echo "I am sorry that you need perl to run configure"
+	exit 1
+fi
+
+PrintHelp()
+{
+	echo "Optional Features:"
+	echo "   --with-mysql[=DIR]    Users database is a MySQL database (default=no)"
+	echo "   --with-pgsql[=DIR]    Users database is a PostgreSQL database (default=no)"
+	echo "   --with-ssl[=DIR]      Enable SSL/TLS support (default=no)"
+	echo "   --with-iconv=[DIR]    Enable codepage to unicode conversion for UTF-8 FTP (default=no)"
+	echo "   --prefix=PREFIX       Install architecture-independent files in PREFIX [/usr/local]"
+	echo ""
+	echo "Some influential environment variables:"
+	echo "   CC          C compiler command"
+	echo "   AR          ar command"
+	echo "   RANLIB      ranlib command"
+	echo "   CFLAGS      C compiler flags, e.g. -I<include dir> if your header file"
+	echo "               is in a nonstandard directory <include dir>"
+	echo "   LDFLAGS     Linker flags, e.g. -L<lib dir> if you have libraries in a"
+	echo "               nonstandard directory <lib dir>"
+	echo ""
+
+}
+
+EnableOpt()
+{
+	perl -pi -e "s/#undef $1$/#define $1/" $ConfigH
+}
+
+GetOptionDir()
+{
+	for i in $@;
+	do
+		opt=`echo $i | cut -d= -f 1`
+		arg=`echo $i | cut -d= -f 2`
+		if [ "$opt" = "$arg" ]; then
+			arg=""
+		fi
+		case "$opt" in
+		"--with-mysql")
+			WITH_MYSQL=y
+			MYSQL_DIR=$arg
+			;;
+		"--with-pgsql")
+			WITH_PGSQL=y
+			PGSQL_DIR=$arg
+			;;
+		"--with-ssl")
+			WITH_SSL=y
+			SSL_DIR=$arg
+			;;
+		"--with-iconv")
+			WITH_ICONV=y
+			ICONV_DIR=$arg
+			;;
+		"--prefix")
+			PREFIX=$arg
+			;;
+		*)
+			;;
+		esac
+	done
+}
+
+GetOptionDir $@
+
+if [ -z "$PREFIX" ]; then
+	PREFIX="/usr/local"
+fi
+HostOS=`uname`
+case $HostOS in
+	*[Ll][Ii][Nn][Uu][Xx]*)
+		EXTRACFLAGS="$EXTRACFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE";
+		;;
+	*[Ff][Rr][Ee][Ee][Bb][Ss][Dd]*)
+		# Nothing for now.
+		;;
+esac
+
+if [ "$1" = "--help" ]; then
+	PrintHelp
+	exit 0;
+fi
+
+cp $ConfigHIn $ConfigH
+cp $MakefileIn $Makefile
+
+#####################################################
+# Test HAVE_EXLOCK
+#####################################################
+echo -n "O_EXLOCK..............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <fcntl.h>
+int main()
+{
+       int flag=O_EXLOCK;
+}
+
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS}> /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_EXLOCK
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_FDCOPY
+#####################################################
+echo -n "FD_COPY...............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+
+int main()
+{
+       int a, b;
+       FD_COPY(&a, &b);
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_FDCOPY
+else
+	echo "[NO]"
+fi
+
+
+#####################################################
+# Test HAVE_TCPWRAPPER
+#####################################################
+echo -n "TCP Wrapper...........	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <tcpd.h>
+int deny_severity;
+int allow_severity;
+
+int main()
+{
+	struct request_info req;
+	hosts_access(&req);
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} -lwrap > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_TCPWRAPPER
+	EXTRALDFLAGS="$EXTRALDFLAGS -lwrap"
+else
+	${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} -lwrap -lnsl > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EnableOpt HAVE_TCPWRAPPER
+		EXTRALDFLAGS="$EXTRALDFLAGS -lwrap -lnsl"
+	else
+		echo "[NO]"
+	fi
+fi
+
+#####################################################
+# Test HAVE_PRINTFLIKE
+#####################################################
+echo -n "Have printflike.......	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+void    func(int, const char *, ...) __printflike(2, 3);
+
+int main() {}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_PRINTFLIKE
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_PWEXPIRE
+#####################################################
+echo -n "pw_expire.............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <pwd.h>
+
+int main()
+{
+	struct passwd pw;
+	time_t t=pw.pw_expire;
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_PWEXPIRE
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_BSDGLOB
+#####################################################
+echo -n "bsd glob..............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <glob.h>
+
+int main()
+{
+	glob_t glob;
+	int a=glob.gl_matchc|GLOB_LIMIT;
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_BSDGLOB
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_MD5FILE
+#####################################################
+echo -n "MD5File...............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <md5.h>
+
+int main()
+{
+	char *szBuf;
+	MD5File("a", szBuf);
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_MD5FILE
+else
+	${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} -lmd > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EnableOpt HAVE_MD5FILE
+		EXTRALDFLAGS="$EXTRALDFLAGS -lmd"
+	else
+		echo "[NO]"
+	fi
+fi
+
+#####################################################
+# Test HAVE_PWCACHE
+#####################################################
+echo -n "user_from_uid.........	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+int main()
+{
+	user_from_uid(1, 2);
+	group_from_gid(1, 2);
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_PWCACHE
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_SHADOW_H
+#####################################################
+echo -n "Shadow passowd........	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <shadow.h>
+int main()
+{
+	
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_SHADOW_H
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_SENDFILE
+#####################################################
+echo -n "Linux sendfile........	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/sendfile.h>
+#include <unistd.h>
+int main()
+{
+	int i;
+	off_t o;
+	size_t c;
+	(void)sendfile(i,i,&o,c);
+
+	return 0;
+}
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVE_SENDFILE
+	EnableOpt HAVE_LINUX_SENDFILE
+else
+	echo "[NO]"
+	#####################################################
+	# Test BSD SENDFILE
+	#####################################################
+	echo -n "FreeBSD sendfile......	"
+	cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/uio.h>
+int main()
+{
+	int i;
+	off_t o;
+	size_t n;
+	struct sf_hdtr h;
+	(void)sendfile(i,i,o,n,&h,&o,i);
+
+	return 0;
+}
+
+_ACEOF
+
+	${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EnableOpt HAVE_SENDFILE
+	else
+		echo "[NO]"
+	fi
+fi
+
+
+#####################################################
+# Test USE_PAM
+#####################################################
+echo -n "Use PAM...............	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <security/pam_appl.h>
+int main()
+{
+	pam_handle_t *pamh = NULL;
+}
+
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} -lpam > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt USE_PAM
+	EXTRALDFLAGS="$EXTRALDFLAGS -lpam"
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVR_SETPROCTITLE
+#####################################################
+echo -n "Check setproctitle....	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main()
+{
+	setproctitle("%s", "alex");
+}
+
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+	echo "[YES]"
+	EnableOpt HAVR_SETPROCTITLE
+else
+	echo "[NO]"
+fi
+
+#####################################################
+# Test HAVE_SI_LEN
+#####################################################
+echo -n "Check sin_len.........	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+
+int main()
+{
+	struct  sockaddr_in  su_sin;
+	printf("%d\n", su_sin.sin_len);
+}
+
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+       echo "[YES]"
+       EnableOpt HAVE_SI_LEN
+else
+       echo "[NO]"
+fi
+
+#####################################################
+# Test INET6
+#####################################################
+echo -n "Check IPv6 support....	"
+cat > conftest.c << _ACEOF
+#include <stdio.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+int main()
+{
+	struct  sockaddr_in6 su_sin6;
+	int s;
+	printf("%d\n", su_sin6.sin6_port);
+}
+
+
+_ACEOF
+
+${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+if [ $? = 0 ]; then
+       echo "[YES]"
+       EnableOpt INET6
+else
+       echo "[NO]"
+fi
+
+#####################################################
+# Test WITH_MYSQL
+#####################################################
+if [ "$WITH_MYSQL" = "y" ]; then
+	echo -n "MySQL.................	"
+
+	for i in $MYSQL_DIR /usr/local /usr;
+	do
+		if [ -z "${MYSQL_INC_DIR}" -a -r $i/include/mysql/mysql.h ]; then
+			MYSQL_INC_DIR="-I$i/include/mysql"
+		elif [ -z "${MYSQL_INC_DIR}" -a -r $i/include/mysql.h ]; then
+			MYSQL_INC_DIR="-I$i/include"
+		fi
+		if [ -z "${MYSQL_LIB_DIR}" -a `ls $i/lib/mysql/libmysqlclient.so* >/dev/null 2>&1; echo $?` = 0 ]; then
+			MYSQL_LIB_DIR="-L$i/lib/mysql -Wl,-rpath,'$i/lib/mysql'"
+		elif [ -z "${MYSQL_LIB_DIR}" -a `ls $i/lib/libmysqlclient.so* >/dev/null 2>&1; echo $?` = 0 ]; then
+			MYSQL_LIB_DIR="-L$i/lib -Wl,-rpath,'$i/lib'"
+		fi
+	done
+	
+cat > conftest.c << _ACEOF
+	#include <string.h>
+	#include <mysql.h>
+	int main()
+	{
+		MYSQL *connection = NULL;
+		connection = mysql_init(NULL);
+	}
+	
+_ACEOF
+
+	
+	${CC} ${EXTRACFLAGS} $MYSQL_INC_DIR conftest.c -o conftest ${EXTRALDFLAGS} $MYSQL_LIB_DIR -lmysqlclient > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EXTRACFLAGS="$EXTRACFLAGS $MYSQL_INC_DIR"
+		EXTRALDFLAGS="$EXTRALDFLAGS $MYSQL_LIB_DIR -lmysqlclient"
+		EnableOpt WITH_MYSQL
+	else
+		echo "[NO]"
+	fi
+fi
+
+#####################################################
+# Test WITH_PGSQL
+#####################################################
+if [ "$WITH_PGSQL" = "y" ]; then
+	echo -n "PostgreSQL............	"
+
+	for i in $PGSQL_DIR /usr/local /usr/local/pgsql /usr;
+	do
+		if [ -z "${PGSQL_INC_DIR}" -a -r $i/include/libpq-fe.h ]; then
+			PGSQL_INC_DIR="-I$i/include"
+		elif [ -z "${PGSQL_INC_DIR}" -a -r $i/include/pgsql/libpq-fe.h ]; then
+			PGSQL_INC_DIR="-I$i/include/pgsql"
+		fi
+		if [ -z "${PGSQL_LIB_DIR}" -a `ls $i/lib/libpq.so* > /dev/null 2>&1; echo $?` = 0 ]; then
+			PGSQL_LIB_DIR="-L$i/lib -Wl,-rpath,'$i/lib'"
+		elif [ -z "${PGSQL_LIB_DIR}" -a `ls $i/lib/pgsql/libpq.so* >/dev/null 2>&1; echo $?` = 0 ]; then
+			PGSQL_LIB_DIR="-L$i/lib/pgsql -Wl,-rpath,'$i/lib/pgsql'"
+		fi
+	done
+	
+cat > conftest.c << _ACEOF
+	#include <libpq-fe.h>
+	int main()
+	{
+		PGconn *connection;
+		connection = PQsetdbLogin(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	}
+	
+_ACEOF
+
+	${CC} ${EXTRACFLAGS} $PGSQL_INC_DIR conftest.c -o conftest ${EXTRALDFLAGS} $PGSQL_LIB_DIR -lpq > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EXTRACFLAGS="$EXTRACFLAGS $PGSQL_INC_DIR"
+		EXTRALDFLAGS="$EXTRALDFLAGS $PGSQL_LIB_DIR -lpq"
+		EnableOpt WITH_PGSQL
+	else
+		echo "[NO]"
+	fi
+fi
+
+#####################################################
+# Test SSL Support
+#####################################################
+if [ "$WITH_SSL" = "y" ]; then
+	echo -n "Check SSL support.....	"
+	
+cat > conftest.c << _ACEOF
+	#include <stdio.h>
+	#include <sys/types.h>
+	#include <openssl/crypto.h>
+	#include <openssl/bio.h>
+	#include <openssl/buffer.h>
+	#include <openssl/x509.h>
+	#include <openssl/ssl.h>
+	#include <openssl/err.h>
+	int main()
+	{
+		SSL_load_error_strings();
+		SSLeay_add_ssl_algorithms();
+	}
+	
+	
+_ACEOF
+	
+	${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} -lssl -lcrypto > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EXTRALDFLAGS="$EXTRALDFLAGS -lssl -lcrypto"
+		EnableOpt WITH_SSL
+	else
+	
+		for i in $SSL_DIR /usr/local /usr;
+		do
+			if [ -z "$SSL_INC_DIR" -a -r $i/include/openssl/crypto.h ]; then
+				SSL_INC_DIR="-I$i/include"
+			fi
+			if [ -z "${SSL_LIB_DIR}" -a -r $i/lib/libcrypto.so ]; then
+				SSL_LIB_DIR="-L$i/lib"
+			fi
+		done
+	
+		${CC} ${EXTRACFLAGS} ${SSL_INC_DIR} conftest.c -o conftest ${EXTRALDFLAGS} ${SSL_LIB_DIR} -lssl -lcrypto > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "[YES]"
+			EXTRACFLAGS="$EXTRACFLAGS ${SSL_INC_DIR}"
+			EXTRALDFLAGS="$EXTRALDFLAGS ${SSL_LIB_DIR} -lssl -lcrypto"
+			EnableOpt WITH_SSL
+		else
+			echo "[NO]"
+		fi
+	fi
+fi
+
+#####################################################
+# Test WITH_ICONV
+#####################################################
+if [ "$WITH_ICONV" = "y" ]; then
+	echo -n "Check iconv support ..	"
+		
+cat > conftest.c << _ACEOF
+		#include <iconv.h>
+		int main()
+		{
+			iconv_t cd = (iconv_t)-1;
+			cd = iconv_open("UTF-8", "Big-5");
+			return 0;
+		}
+		
+_ACEOF
+	
+	for i in $ICONV_DIR /usr/local /usr;
+	do
+		if [ -z "${ICONV_INC_DIR}" -a -r $i/include/iconv.h ]; then
+			ICONV_INC_DIR="-I$i/include"
+		fi
+		if [ -z "${ICONV_LIB_DIR}" -a -r $i/lib/libiconv.so ]; then
+			ICONV_LIB_DIR="-L$i/lib"
+		fi
+	done
+	
+	${CC} ${EXTRACFLAGS} $ICONV_INC_DIR conftest.c -o conftest ${EXTRALDFLAGS} $ICONV_LIB_DIR -liconv > /dev/null 2>&1
+	if [ $? = 0 ]; then
+		echo "[YES]"
+		EXTRACFLAGS="$EXTRACFLAGS $ICONV_INC_DIR"
+		EXTRALDFLAGS="$EXTRALDFLAGS $ICONV_LIB_DIR -liconv"
+		EnableOpt WITH_ICONV
+	else
+		${CC} ${EXTRACFLAGS} conftest.c -o conftest ${EXTRALDFLAGS} > /dev/null 2>&1
+		if [ $? = 0 ]; then
+			echo "[YES]"
+			EnableOpt WITH_ICONV
+		else
+			echo "[NO]"
+		fi
+	fi
+fi
+
+rm -rf conftest.c conftest
+
+PREFIX=`echo $PREFIX | perl -pi -e "s/\//\\\\\\\\\//g"`
+CC=`echo $CC | perl -pi -e "s/\//\\\\\\\\\//g"`
+AR=`echo $AR | perl -pi -e "s/\//\\\\\\\\\//g"`
+RANLIB=`echo $RANLIB | perl -pi -e "s/\//\\\\\\\\\//g"`
+EXTRACFLAGS=`echo $EXTRACFLAGS | perl -pi -e "s/\//\\\\\\\\\//g"`
+EXTRALDFLAGS=`echo $EXTRALDFLAGS | perl -pi -e "s/\//\\\\\\\\\//g"`
+
+cp $CurDir/os/FreeBSD/smbftpd.sh.in $CurDir/os/FreeBSD/smbftpd.sh
+perl -pi -e "s/\@PREFIX\@/$PREFIX/" $Makefile $CurDir/os/FreeBSD/smbftpd.sh $ConfigH
+perl -pi -e "s/\@CC\@/$CC/" $Makefile
+perl -pi -e "s/\@AR\@/$AR/" $Makefile
+perl -pi -e "s/\@RANLIB\@/$RANLIB/" $Makefile
+perl -pi -e "s/\@EXTRACFLAGS\@/$EXTRACFLAGS/" $Makefile
+perl -pi -e "s/\@EXTRALDFLAGS\@/$EXTRALDFLAGS/" $Makefile
+
+echo ""
+echo "Finished configure."
+echo ""

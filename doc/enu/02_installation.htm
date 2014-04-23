@@ -1,0 +1,222 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>SmbFTPD</title>
+<link rel="STYLESHEET" type="text/css" href="style.css" />
+</head>
+
+<body>
+
+    <p align="center"><tt class="chtitle1">
+    SmbFTPD Handbook</tt></p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="10%" align="left" valign="bottom"><a href="01_introduction.htm">
+    Priv<br>
+    Introduction</a></td>
+    <td width="80%" valign="bottom">&nbsp;</td>
+    <td width="10%" align="right" valign="bottom"><a href="03_smbftpd.conf.htm">
+    Next<br>
+    smbftpd.conf </a></td>
+  </tr>
+</table>
+
+    <hr>
+
+    <p class="chtitle1">Chapter 2 Installation</p>
+
+    <p class="chtitle4">Table of Contents</p>
+    <blockquote>
+
+    <p>2.1 <a href="#require">Requirements</a></p>
+
+    <p>2.2 <a href="#compile">Compile and installation</a></p>
+
+    <p>2.2 <a href="#run">Running SmbFTPD</a></p>
+    </blockquote>
+
+    <p>
+    <a name="require"><tt class="chtitle2">2.1 Requirements</tt></a></p>
+    <p>In order to compile and install SmbFTPD, you need:</p>
+
+    <ul>
+      <li>Perl (Practical Extraction and Report Language), which is required to 
+      run the configure.</li>
+      <li>Berkeley Yacc (which is known as yacc or byacc), an LALR parser 
+      generator.</li>
+      <li>The GNU Compiler Collection (gcc).</li>
+      <li>The GNU binary utilities (binutils).</li>
+      <li>To use SSL/TLS feature, you will need OpenSSL 0.9.6 or higher, OpenSSL 
+      0.9.7 is recommended;</li>
+    </ul>
+
+    <p>
+    <a name="compile"><tt class="chtitle2">2.2 Compile and Installation</tt></a></p>
+    <p>After download the SmbFTPD, please un-tar and change directory in it. 
+    Then you may compile  by the following commands:</p>
+    <pre class="screen"># <tt class="userinput">./configure</tt>
+# <tt class="userinput">make</tt></pre>
+<p>The configure command will detect your system environment and decide the 
+compile options and features to install, such as IPv6 support,  TCP 
+Wrapper, or PAM, etc.</p>
+<p>Other available options&nbsp; for configure:</p>
+<pre class="screen"># <tt class="userinput">./configure --help</tt>
+Optional Features:
+   --with-mysql[=DIR]    Users database is a MySQL database (default=no)
+   --with-pgsql[=DIR]    Users database is a PostgreSQL database (default=no)
+   --with-ssl[=DIR]      Enable SSL/TLS support (default=no)
+   --with-iconv=[DIR]    Enable codepage to unicode conversion for UTF-8 FTP (default=no)
+   --prefix=PREFIX       Install architecture-independent files in PREFIX [/usr/local]
+</pre>
+<p>If you would like to use MySQL virtual user function, please add the option --with-mysql. 
+To use SSL/TLS, add --with-ssl.</p>
+<p>After compile, if you have SSL/TLS support, you will need SSL certificate and 
+private key. If you have installed Apache+SSL, you can use the its certificate, 
+too. To generate certificate, please use the following commnad before install:</p>
+    <pre class="screen"># <tt class="userinput">make cert</tt></pre>
+    <p>We will generate a self signing certificate. Now you can install the 
+    SmbFTPD by the following commnad:</p>
+    <pre class="screen"># <tt class="userinput">make install</tt></pre>
+    <p>If you would like to cross compile, just set the path of CC in the 
+    environment:</p>
+    <pre class="screen"># <tt class="userinput">env CC=/usr/local/powerpc-linux/bin/powerpc-linux-gcc \
+    LD=/usr/local/powerpc-linux/bin/powerpc-linux-ld \
+    RANLIB=/usr/local/powerpc-linux/bin/powerpc-linux-ranlib \
+    ./configure --with-ssl --with-iconv</tt>
+# <tt class="userinput">make</tt>
+# <tt class="userinput">make cert</tt>
+# <tt class="userinput">make install</tt></pre>
+    <p>After make install, we will 
+    install the smbftpd into <tt class="filename">/usr/local/sbin</tt>
+    and install the smbftpd.conf and smbftpd_share.conf into <tt class="filename">/usr/local/etc/smbftpd/</tt>. 
+    If you are installing the SmbFTPD in Linux and the <tt class="filename">/etc/pam.d/ftpd</tt> 
+    does not exist, we will also install a ftpd PAM file (Pluggable 
+    Authentication Modules). Some OS, such as 
+    Fedora does not have PAM for ftpd. But smbftpd might need it.</p>
+    <p>If you would like to install smbftpd into other directory rather then /usr/local, 
+    you can add option --prefix=/path/to/your/dir when running configure.</p>
+    <p><a name="run"><tt class="chtitle2">2.3 Running SmbFTPD</tt></a></p>
+    <p>Before starting the SmbFTPD, you should edit <tt class="filename">/usr/local/etc/smbftpd/smbftpd.conf</tt>. 
+    If not, you will use the default configuration which is usually ok. We will 
+    descript more about the configuration file in the next chapter.</p>
+    <p>There are two ways to use the FTP daemon: as an inetd-based service or in 
+    a daemon mode. The most common manner is to run the ftpd as the inetd-based 
+    service. In this case the internet &quot;super-server&quot; listens for connections, 
+    does access control and starts the server to handle the request. In the 
+    daemon mode, the ftpd itself accepts connections on the FTP port and forks 
+    children processes to handle them. This mode has the lower overhead and thus 
+    is useful on busy servers to reduce load.</p>
+    <p>There are two popular implementations of the &quot;super-server&quot;: inetd and 
+    xinetd. The capabilities of inetd may vary in different operating systems: 
+    modern distributions of BSD systems usually use an enhanced version of this 
+    software as a default &quot;super-server&quot;, but in other systems, include most 
+    Linux distributions, a simpler one is available.</p>
+    <p>The xinetd is a powerful replacement for inetd and it&#39;s used as the 
+    default internet &quot;super-server&quot; in a number of modern Linux distributions, 
+    but it&#39;s also available for some other operating systems, include most 
+    popular BSD ones.</p>
+    <p>In case of inetd you need to edit the /etc/inetd.conf file and to add 
+    something like this into it:</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen">ftp     stream  tcp     nowait  root    /usr/local/sbin/smbftpd smbftpd </pre>
+        </td>
+      </tr>
+    </table>
+    <p>The xinetd configuration may be stored in the /etc/xinetd.conf file or in 
+    separate files (with the same syntax as xinetd.conf) with arbitrary names in 
+    the /etc/xinetd.d/ directory. If the xinetd.d/ directory exists, then 
+    xinetd.conf contains some defaults and xinetd.d/ contains configurations of 
+    individual services.</p>
+    <p>Next configuration may be recommended as a template:</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen"># file: /etc/xinetd.d/smbftpd
+# default: off
+# description: SmbFTPD supports TLS/SSL for both control and data
+# connections, but also fully compatible with standard FTP protocol.
+service ftp
+{
+	disable     = no
+	flags       = REUSE
+	socket_type = stream
+	protocol    = tcp
+	wait        = no
+	user        = root
+	server      = /usr/local/sbin/smbftpd
+}</pre>
+        </td>
+      </tr>
+    </table>
+    <p>In this example, the service is enable by default, so you need to change 
+    the &quot;disable&quot; flag from &quot;no&quot; to &quot;yes&quot; to disable the secure FTP server. 
+    After changing of the configuration, you need to force inetd or xinetd to 
+    re-read it. See also the documentation of the corresponding software for 
+    more information, in particular the inetd(8) and/or xinetd(8) man pages.</p>
+    <p>If you would like to run smbftpd as a standalone daemon just use the 
+    following command:</p>
+    <pre class="screen"># <tt class="userinput">/usr/local/sbin/smbftpd -D</tt></pre>
+    <p>For FreeBSD users, if you would like to run smbftpd at boot time, please 
+    edit the /etc/rc.conf and add the following line:</p>
+    <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600">
+      <tr>
+        <td width="100%">
+        <pre class="screen">smbftpd_enable="Yes"
+smbftpd_flags="-D"</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Than you can use the following command to start SmbFTPD:</p>
+        <pre class="screen"># <tt class="userinput">/usr/local/etc/rc.d/smbftpd.sh start</tt></pre>
+    <p>To stop:</p>
+        <pre class="screen"># <tt class="userinput">/usr/local/etc/rc.d/smbftpd.sh stop</tt></pre>    
+    <p>Here are available options you can use when starting smbftpd:</p>
+    <table border="1" cellpadding="3" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="600" id="AutoNumber2">
+      <tr>
+        <td width="185" nowrap><b>Option</b></td>
+        <td width="412"><b>Description</b></td>
+      </tr>
+      <tr>
+        <td width="185" nowrap>-4</td>
+        <td width="412">Accept IPv4 connection only.</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap>-6</td>
+        <td width="412">Accept IPv6 connection only.</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap>-D</td>
+        <td width="412">With this option set, ftpd will detach and become a 
+        daemon, accepting connections on the FTP port and forking children 
+        processes to handle them. This is lower overhead than starting ftpd from 
+        inetd(8) and is thus useful on busy servers to reduce load.</td>
+      </tr>
+      <tr>
+        <td width="185" nowrap>-s /path/to/smbftpd.conf</td>
+        <td width="412">Specify alternative smbftpd.conf. The default path of 
+        smbftpd.conf is <tt class="filename">/usr/local/etc/smbftpd/smbftpd.conf</tt>. You may change the path by 
+        this option.</td>
+      </tr>
+    </table>
+    <p>&nbsp;</p>
+    <hr>
+    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber1">
+  <tr>
+    <td width="10%" valign="top"><a href="01_introduction.htm">Priv<br>
+    Introduction</a></td>
+    <td width="80%" valign="top">
+    <p align="center"><a href="index.htm">Index</a><br>
+    This document can be downloaded from 
+    <a href="http://www.twbsd.org">http://www.twbsd.org</a>.</td>
+    <td width="10%" align="right" valign="top"><a href="03_smbftpd.conf.htm">
+    Next<br>
+    smbftpd.conf </a></td>
+  </tr>
+</table>
+</body>
+
+</html>
